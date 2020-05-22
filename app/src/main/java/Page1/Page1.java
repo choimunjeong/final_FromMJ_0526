@@ -60,6 +60,7 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener {
     private NestedScrollView scrollView;
     boolean isExpand = false;
 
+    //*******************************여기부터 추가***********************************************************
     //메뉴 관련
     private ImageButton menu_edit;
     private ImageView userImg;
@@ -73,6 +74,7 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener {
     private Toolbar toolbar2;
     private DrawerLayout drawer;
     private EndDrawerToggle mDrawerToggle;
+    //******************************************************************************************
 
     String cat_text = null;   // 카테고리 이름
     String cat_text2 = null;
@@ -107,12 +109,25 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_page1_drawer);
+
+
+        //****************여기 추가**************************************************************************
+        // (1) 아래 자바 파일 추가
+        // EndDrawerToggle.
+        // Main.RecyclerviewAdapter
+        // Second_RecyclerviewAdapter
+
+        // (2)xnl 파일 추가
+        // activity_page1_drawer
+        // menu_header_main
+        // menu_main_item
+        // menu_second_recyclerview_item
 
 
         //객체 연결
+        setContentView(R.layout.activity_page1_drawer);
         context = getApplicationContext();
-       toolbar2 = findViewById(R.id.toolbar);
+        toolbar2 = findViewById(R.id.toolbar);
         drawer = findViewById(R.id.drawer_layout);
         userImg = (ImageView)findViewById(R.id.menu_userImage);
         userText1 = (TextView)findViewById(R.id.menu_text1);
@@ -146,7 +161,7 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener {
         name.add("2");
 
 
-
+        //******************************************************************************************
 
 
 
@@ -157,25 +172,6 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener {
        // Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         scrollView = (NestedScrollView) findViewById(R.id.nestScrollView_page1);
-        //setSupportActionBar(toolbar);
-
-//        //위아래로 드래그 했을 때 변화를 감지하는 부분
-//        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-//            int oldY = 0;
-//            @Override
-//            public void onScrollChanged() {
-//                int scrollY = scrollView.getScrollY(); // For ScrollView
-//                Log.i("X-Y", "-" + scrollY);
-//                if(scrollY > oldY){
-//                    Log.i("아래로 드래그", "^^");
-//                    oldY = scrollY;
-//                } else {
-//                    Log.i("위로 드래그", "^^");
-//                    oldY = scrollY;
-//                }
-//                // DO SOMETHING WITH THE SCROLL COORDINATES
-//            }
-//        });
 
         // DB열기
         mDbOpenHelper = new DbOpenHelper(this);
