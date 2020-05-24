@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Spot_200510_hs</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="open_drawer">open</string>
+    <string name="close_drawer">close</string>
+
+<!--    메뉴에서 페이지 연결-->
+    <string name="menu1">나의 여행 기록</string>
+    <string name="menu2">여행유형 테스트</string>
+    <string name="menu3">여행 카테고리 보기</string>
+    <string name="menu4">도시 검색하기</string>
+    <string name="menu5">내가 찜한 관광지</string>
+    <string name="menu6">기차 스케쥴짜기</string>
+    <string name="menu7">일정 등록하기</string>
+</resources>
