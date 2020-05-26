@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@drawable/ic_bg_photospot">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/page2_1_x_scrollView">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            //뒤로가기 버튼
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/empty_btn"
+                android:layout_width="9dp"
+                android:layout_height="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/ic_back_btn"/>
+
+            //뒤로가기버튼 버튼 영역을 넓게 주기 위해서 빈 이미지 생성
+            <ImageView
+                android:id="@+id/page2_1_x_back_btn"
+                android:layout_width="70dp"
+                android:layout_height="70dp" />
+
+            // 타이틀
+            <TextView
+                android:id="@+id/page2_1_x_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/empty_btn"
+                android:text="순천 오픈 세트장"
+                android:textSize="24dp"
+                android:textColor="#000000"
+                android:fontFamily="@font/notosans_bold"
+                android:textStyle="bold"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="23dp"/>
+
+            // 이미지 슬라이드 들어감
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/page2_1_x_viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_below="@id/page2_1_x_title"/>
+
+            // 관광지 정보
+            <LinearLayout
+                android:id="@+id/page2_1_1_info_layout"
+                android:layout_marginTop="23dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:background="@drawable/box_white"
+                android:layout_below="@+id/page2_1_x_viewpager">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/page2_1_x_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FFFFFF"/>
+            </LinearLayout>
+
+            // 지도
+            <RelativeLayout
+                android:id="@+id/page2_1_1_map"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:background="@drawable/box_round"
+                android:layout_below="@+id/page2_1_1_info_layout"
+                android:layout_marginTop="24dp"/>
+        </RelativeLayout>
+    </ScrollView>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/page2_1_1_like"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/ic_icon_add_float_1"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

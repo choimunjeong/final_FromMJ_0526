@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="Page3.Page3_Main">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="3dp">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/toolbar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:toolbarId="@+id/toolbar"
+                android:elevation="3dp">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:paddingTop="10dp"
+                    app:layout_collapseMode="pin"
+                    android:elevation="3dp"
+                    android:theme="@style/Theme.Dark">
+
+                    <ImageButton
+                        android:id="@+id/main_logo_page3"
+                        android:layout_width="70dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="16dp"
+                        android:background="@drawable/ic_logo_0519"/>
+
+                </androidx.appcompat.widget.Toolbar>
+
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="Page3.Page3_Main"
+            android:id="@+id/nestScrollView_page3"
+            android:background="@drawable/ic_background"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+
+    <RelativeLayout
+        android:id="@+id/layout_page3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp">
+
+
+        //타이틀 텍스트 - 여행 스케쥴 짜기
+        <TextView
+            android:id="@+id/page3_title"
+            android:layout_width="180dp"
+            android:layout_height="33dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="여행 스케쥴 짜기"
+            android:textSize="24dp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:letterSpacing="-0.03"
+            android:fontFamily="@font/notosans_bold"/>
+
+        //서브타이틀 텍스트
+        <TextView
+            android:id="@+id/page3_subtitle"
+            android:layout_width="300dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_below="@+id/page3_title"
+            android:layout_marginTop="16dp"
+            android:text="당신을 위한 최적의 경로를 추천해드립니다."
+            android:textSize="16dp"
+            android:textColor="#000000"
+            android:letterSpacing="-0.03" />
+
+        //출발 날짜 텍스트
+        <TextView
+            android:id="@+id/page3_text"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_below="@id/page3_subtitle"
+            android:layout_marginTop="32dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="출발 날짜"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:letterSpacing="-0.03"
+            android:fontFamily="@font/notosans_bold" />
+
+        //출발 날짜 입력받는 흰 박스
+        <LinearLayout
+            android:id="@+id/page3_date"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_below="@id/page3_text"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_centerHorizontal="true"
+            android:clickable="true"
+            android:background="@drawable/datebox"
+            android:elevation="4dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/page3_setYear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="1995년"
+                android:textColor="#000000"
+                android:textSize="18dp"
+                android:fontFamily="@font/notosans_semibold">
+            </TextView>
+
+            <TextView
+                android:id="@+id/page3_setMonth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="04월"
+                android:textColor="#000000"
+                android:textSize="18dp"
+                android:fontFamily="@font/notosans_semibold">
+            </TextView>
+
+            <TextView
+                android:id="@+id/page3_setDay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="05일"
+                android:textColor="#000000"
+                android:textSize="18dp"
+                android:fontFamily="@font/notosans_semibold">
+            </TextView>
+
+
+        </LinearLayout>
+
+
+        //이용권 텍스트
+        <TextView
+            android:id="@+id/page3_day"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_below="@+id/page3_date"
+            android:layout_marginTop="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="이용권"
+            android:textStyle="bold"
+            android:textSize="18dp"
+            android:textColor="#000000"
+            android:letterSpacing="-0.03"
+            android:fontFamily="@font/notosans_bold" />
+
+        <LinearLayout
+            android:id="@+id/dayPass_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/page3_day"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+        //이용권 - 3일권
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/dayPass_3"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="16dp"
+            android:text="3일권"
+            android:textSize="16dp"
+            android:textColor="#000000"
+            android:background="@drawable/btn_ticket"
+            android:fontFamily="@font/notosans_semibold"
+            android:elevation="3dp" />
+
+        //이용권 - 5일권
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/dayPass_5"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_horizontal"
+            android:text="5일권"
+            android:textSize="16dp"
+            android:textColor="#000000"
+            android:fontFamily="@font/notosans_semibold"
+            android:background="@drawable/btn_ticket"
+            android:elevation="3dp" />
+
+        //이용권 - 7일권
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/dayPass_7"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="16dp"
+            android:text="7일권"
+            android:textSize="16dp"
+            android:textColor="#000000"
+            android:fontFamily="@font/notosans_semibold"
+            android:background="@drawable/btn_ticket"
+            android:elevation="3dp" />
+
+        </LinearLayout>
+
+        //정차역 입력하기 텍스트
+        <TextView
+            android:id="@+id/page3_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_below="@+id/dayPass_layout"
+            android:layout_marginTop="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="정차역 입력하기"
+            android:textStyle="bold"
+            android:textSize="18dp"
+            android:textColor="#000000"
+            android:letterSpacing="-0.03"
+            android:fontFamily="@font/notosans_bold" />
+
+
+
+        <include layout="@layout/page3_main_contents"
+            android:id="@+id/content_main"
+            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/page3_edittext"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp" />
+
+
+            <AutoCompleteTextView
+                android:id="@+id/searchStation_page3"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/content_main"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:clickable="true"
+                android:completionThreshold="1"
+                android:dropDownHeight="140dp"
+                android:background="@drawable/search_stn_page3"
+                android:textColor="#000000"
+                android:drawableLeft="@drawable/baseline_search_24"
+                android:paddingLeft="25dp"
+                android:drawablePadding="17.6dp"
+                android:hint="추가할 도시를 입력해 주세요"
+                android:fontFamily="@font/notosans_semibold"
+                android:textSize="18dp"/>
+
+
+        <RelativeLayout
+            android:id="@+id/page3_svg_bg"
+            android:layout_width="370dp"
+            android:layout_height="404.61dp"
+            android:elevation="4dp"
+            android:padding="5dp"
+            android:layout_below="@+id/searchStation_page3"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/webview_touch">
+
+            //svg 지도 ( 임의로 내림 원래 android:layout_marginTop="531dp)
+            <WebView
+                android:id="@+id/page3_svg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:background="#9ad1d9" />
+        </RelativeLayout>
+
+        //최단 경로 조회하기 버튼
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/page3_search_btn"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="최단 경로 조회하기"
+            android:textSize="16dp"
+            android:textColor="#ffffff"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/notosans_semibold"
+            android:layout_below="@+id/page3_svg_bg"
+            android:layout_marginTop="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/box_round3"
+            android:elevation="4dp" />
+
+    </RelativeLayout>
+
+        </androidx.core.widget.NestedScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <RelativeLayout
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:background="#ffffff"
+        android:fitsSystemWindows="true">
+
+        <include layout="@layout/menu_header_main"/>
+
+    </RelativeLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>
