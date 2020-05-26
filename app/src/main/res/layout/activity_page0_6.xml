@@ -4,15 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/ic_bg05_back"
     tools:context=".Page0_6">
 
     //애니메이션
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/page0_6_bg"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:lottie_autoPlay="true"
-        app:lottie_fileName="bg05.json"
+        app:lottie_fileName="bg05_c.json"
         app:lottie_loop="true"/>
 
 

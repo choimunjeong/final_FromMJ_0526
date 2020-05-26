@@ -52,6 +52,8 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -153,6 +155,11 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
     String like;
     String mScore[] = new String[8];
 
+    //------------------------------------------------------여기 추가
+    private ProgressBar loading_progress;
+
+
+
     @SuppressLint("WrongViewCast")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -169,6 +176,9 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
         positionBtn = (Switch)findViewById(R.id.menu_postion_btn);
         alramBtn = (Switch)findViewById(R.id.menu_alram_btn);
         recyclerView1 = (RecyclerView)findViewById(R.id.menu_recyclerview1);
+        //**************여기 추가**************************************************************************
+        loading_progress = findViewById(R.id.page1_progress);
+
 
 
         mDrawerToggle = new EndDrawerToggle(this,drawer,toolbar2,R.string.open_drawer,R.string.close_drawer){
@@ -669,12 +679,26 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
             cityName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //프로그레스바 실행---------------------------------------------------------------여기 추가
+                    loading_progress.setVisibility(View.VISIBLE);
+
+
                     // 도시 버튼 눌렸을 때
                     Intent cityIntent = new Intent(Page1.this.getApplicationContext(), Page2_X_Main.class);
                     cityIntent.putExtra("Page1_stName", city.getCityName());
                     cityIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     cityIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(cityIntent);
+
+
+                    //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            loading_progress.setVisibility(View.INVISIBLE);
+                        }
+                    }, 400);
                 }
             });
 
@@ -722,6 +746,10 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
 
     @Override
     public void onClick(View view) {
+        //프로그레스바 실행---------------------------------------------------------------여기 추가
+        loading_progress.setVisibility(View.VISIBLE);
+
+
         Intent intent = new Intent(getApplicationContext(), Page2.class);
         intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
@@ -743,6 +771,16 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
 
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
+
+
+        //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loading_progress.setVisibility(View.INVISIBLE);
+            }
+        }, 400);
     }
 
     public class City {

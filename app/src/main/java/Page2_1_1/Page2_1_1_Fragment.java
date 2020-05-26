@@ -10,11 +10,14 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.example.hansol.spot_200510_hs.R;
 
@@ -46,7 +49,8 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
     private String  station, subject, isMake;
     private String contentTypeId, cat1, cat2;
     private DbOpenHelper mDbOpenHelper;
-    String id;
+    private String id;
+    private ProgressBar loading_progress;
 
     //역 이름을 받아서 지역코드랑 시군구코드 받기 위한 배열
     int station_code = 49;
@@ -106,17 +110,33 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
         mDbOpenHelper.open();
         mDbOpenHelper.create();
 
+        //----------프로그레스바--------------------------------------------여기 추가
+        loading_progress = v.findViewById(R.id.page2_1_1_progress);
+
+
         Button btn = v.findViewById(R.id.page2_1_fragment_more_btn);
         btn.setText("'" + station + "'의 다른 관광지 더 보기");
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //프로그레스바 실행---------------------------------------------------------------여기 추가
+                loading_progress.setVisibility(View.VISIBLE);
+
                 Intent intent = new Intent(getContext(), Page2_X_Main.class);
                 intent.putExtra("station", station);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
+
+                //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loading_progress.setVisibility(View.INVISIBLE);
+                    }
+                }, 400);
             }
         });
 
@@ -126,6 +146,7 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
         recyclerView.setHasFixedSize(true);
 
         // mkae = api 연결 // delete = api 연결 X
+        Log.i("뭔데page2_1_1", isMake);
         if(isMake.equals("make")) {
             //txt 값 읽기
             settingList();
@@ -306,8 +327,8 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
     {
         @Override
         protected void onPreExecute() {
-            //초기화 단계에서 사용
-//            progressBar.setVisibility(View.VISIBLE);
+            //프로그레스바 실행---------------------------------------------------------------여기 추가
+            loading_progress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -410,6 +431,8 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+            loading_progress.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/ic_bg07_back"
     tools:context=".Page0_8">
 
     //애니메이션
@@ -12,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:lottie_autoPlay="true"
-        app:lottie_fileName="bg07.json"
+        app:lottie_fileName="bg07_c.json"
         app:lottie_loop="true"/>
 
 

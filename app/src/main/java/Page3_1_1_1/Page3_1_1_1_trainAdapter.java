@@ -47,6 +47,9 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
     private ItemTouchHelper touchHelper;
     private ArrayList<Page3_1_1_1_Main.RecycleItem> items = null;
 
+    //프로그레스 인터페이스 ------------------------------------------------여기 추가
+    private ForProgress forProgress;
+
     //헤더바 위치가 0이면 true로 바뀌고 1일차로 움직일 수 없게 만듦
     boolean firstdone = false;
 
@@ -72,10 +75,11 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
 
 
     //부모 액티비티와 연결
-    Page3_1_1_1_trainAdapter(ArrayList<Page3_1_1_1_Main.RecycleItem> list, FragmentManager supportFragmentManager, int isNetworkConnect) {
+    Page3_1_1_1_trainAdapter(ArrayList<Page3_1_1_1_Main.RecycleItem> list, FragmentManager supportFragmentManager, int isNetworkConnect, ForProgress forProgress) {
         items = list;
         this.fragmentManager = supportFragmentManager;
         this.isNetworkConnect = isNetworkConnect;
+        this.forProgress = forProgress;
     }
 
 
@@ -431,6 +435,13 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
     public  class  Task extends AsyncTask<String, Void, String> {
         private String str;
 
+        //-----------------------------------------------여기추가
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            forProgress.settingProgress(true);
+        }
+
         @Override
         protected String doInBackground(String... strings) {
             URL url = null;
@@ -465,6 +476,13 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
                 e.printStackTrace();
             }
             return receiveMsg;
+        }
+
+        //-----------------------------------------------여기추가
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            forProgress.settingProgress(false);
         }
     }
 
@@ -537,7 +555,9 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
         }
     }
 
-
+    public interface ForProgress{
+        void settingProgress(boolean run);
+    }
 
 
 }

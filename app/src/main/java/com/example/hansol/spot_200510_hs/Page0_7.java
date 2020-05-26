@@ -23,11 +23,6 @@ public class Page0_7 extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_page0_7);
 
-        //애니메이션
-        LottieAnimationView animationView = findViewById(R.id.page0_7_bg);
-        animationView.setImageAssetsFolder("images/");
-        animationView.playAnimation();
-
         score = new int[8];
 
         a1_activity = (TextView)findViewById(R.id.page0_7_a1);

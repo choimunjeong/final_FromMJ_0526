@@ -381,6 +381,16 @@
     //관광지 api가 들어갈 리사이클러뷰
     <include layout="@layout/page2_content" />
 
+    //------------------------------------------여기추가
+    <ProgressBar
+        android:id="@+id/page2_progress"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
+        android:background="@drawable/progress_circle"/>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
     <RelativeLayout

@@ -6,15 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Page0_3"
+    android:background="@drawable/ic_bg01_back"
     android:orientation="vertical">
 
     //애니메이션
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/page0_1_bg"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:lottie_autoPlay="true"
-        app:lottie_fileName="bg01.json"
+        app:lottie_fileName="bg01_c.json"
         app:lottie_loop="true"/>
 
     <RelativeLayout

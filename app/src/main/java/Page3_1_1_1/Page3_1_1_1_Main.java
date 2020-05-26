@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +43,7 @@ import Page2_1_1.NetworkStatus;
 import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
 
-public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_addCityBottomSheet.onSetList {
+public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_addCityBottomSheet.onSetList, Page3_1_1_1_trainAdapter.ForProgress {
     TextView title;
     TextView addSpot;
     String split_1 [];
@@ -82,8 +83,11 @@ public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_
     private Toolbar toolbar2;
     private DrawerLayout drawer;
     private EndDrawerToggle mDrawerToggle;
+    private ImageButton logo;
+    //------------------------------------------------------여기 추가
+    private ProgressBar loading_progress;
 
-    ImageButton logo;
+
 
 
     @Override
@@ -125,6 +129,8 @@ public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_
         userText2 = (TextView)findViewById(R.id.menu_text2);
         positionBtn = (Switch)findViewById(R.id.menu_postion_btn);
         recyclerView1 = (RecyclerView)findViewById(R.id.menu_recyclerview1);
+        //**************여기 추가*********************************이 액티비티에선 인터페이스 필요해서 만듦*****************************************
+        loading_progress = findViewById(R.id.page3_1_1_1_progress);
 
         mDrawerToggle = new EndDrawerToggle(this,drawer,toolbar2,R.string.open_drawer,R.string.close_drawer){
             @Override //드로어가 열렸을때
@@ -291,7 +297,7 @@ public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_
 
         // 리사이클러뷰에 Adapter 객체 지정.
         int isNetworkConnect  = NetworkStatus.getConnectivityStatus(Page3_1_1_1_Main.this);
-        adapter = new Page3_1_1_1_trainAdapter(list, getSupportFragmentManager(), isNetworkConnect);
+        adapter = new Page3_1_1_1_trainAdapter(list, getSupportFragmentManager(), isNetworkConnect, this);
         recyclerView.setAdapter(adapter);
 
 
@@ -402,6 +408,15 @@ public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_
             Toast.makeText(getApplicationContext(), "해당되는 정차역이 없습니다.", Toast.LENGTH_LONG).show();
     }
 
+    //-----------------------------------------------여기추가
+    @Override
+    public void settingProgress(boolean run) {
+        if(run){
+            loading_progress.setVisibility(View.VISIBLE);
+        } else{
+            loading_progress.setVisibility(View.INVISIBLE);
+        }
+    }
 
 
     public static class RecycleItem {

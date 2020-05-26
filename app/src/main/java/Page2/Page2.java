@@ -11,6 +11,7 @@ import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -152,6 +154,11 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
     ScrollView scrollView;
     int page = 1;     //api 페이지 수
 
+    //------------------------------------------------------여기 추가
+    private ProgressBar loading_progress;
+
+
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,6 +188,9 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         userText2 = (TextView)findViewById(R.id.menu_text2);
         positionBtn = (Switch)findViewById(R.id.menu_postion_btn);
         recyclerView1 = (RecyclerView)findViewById(R.id.menu_recyclerview1);
+        //**************여기 추가**************************************************************************
+        loading_progress = findViewById(R.id.page2_progress);
+
 
 
         mDrawerToggle = new EndDrawerToggle(this,drawer,toolbar2,R.string.open_drawer,R.string.close_drawer){
@@ -398,15 +408,28 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         adapter = new Page2_CardView_adapter(cardview_items, mainActivity, "cityname", this);
         recyclerView.setAdapter(adapter);
 
+        //코스더보기
         courseMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //프로그레스바 실행---------------------------------------------------------------여기 추가
+                loading_progress.setVisibility(View.VISIBLE);
+
                 Toast.makeText(getApplicationContext(), subject, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(Page2.this, Page2_1_1.class);
                 intent.putExtra("subject_title", subject);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+
+                //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loading_progress.setVisibility(View.INVISIBLE);
+                    }
+                }, 400);
             }
         });
 
@@ -415,12 +438,24 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         courseBox1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //프로그레스바 실행---------------------------------------------------------------여기 추가
+                loading_progress.setVisibility(View.VISIBLE);
+
                 Intent intent = new Intent(getApplicationContext(), Page2_1_1.class);
                 intent.putExtra("position", 0);
                 intent.putExtra("subject_title", subject);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+
+                //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loading_progress.setVisibility(View.INVISIBLE);
+                    }
+                }, 400);
             }
         });
 
@@ -428,12 +463,24 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         courseBox2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //프로그레스바 실행---------------------------------------------------------------여기 추가
+                loading_progress.setVisibility(View.VISIBLE);
+
                 Intent intent = new Intent(getApplicationContext(), Page2_1_1.class);
                 intent.putExtra("position", 1);
                 intent.putExtra("subject_title", subject);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+
+                //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loading_progress.setVisibility(View.INVISIBLE);
+                    }
+                }, 400);
             }
         });
 
@@ -838,8 +885,8 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
     {
         @Override
         protected void onPreExecute() {
-            //초기화 단계에서 사용
-//            progressBar.setVisibility(View.VISIBLE);
+            //프로그레스바 실행---------------------------------------------------------------여기 추가
+            loading_progress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -953,6 +1000,9 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+
+            //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+            loading_progress.setVisibility(View.INVISIBLE);
         }
     }
 
