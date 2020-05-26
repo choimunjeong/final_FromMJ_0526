@@ -619,7 +619,6 @@ public class Page2_X_Main extends AppCompatActivity implements Page2_X_Interface
     public void onData(ArrayList<Page2_X_CategoryBottom.Category_item> list) {
 
         //카테고리 선택되면 기존 것들 싹 삭제해줌
-        category_add.removeAllViews();
         appBarLayout.getLayoutParams().height = (int)(483*d);
         appBarLayout.requestLayout();
 
@@ -636,20 +635,8 @@ public class Page2_X_Main extends AppCompatActivity implements Page2_X_Interface
         button.setText(name);
         button.setLayoutParams(params);
         button.setId(R.id.category_add_btn1);
-        //button.setOnClickListener(this);
         button.setBackgroundResource(R.drawable.box_round_category_add);
-        category_add.addView(button);
 
-        //아래는 나중에
-//        for(int i =0; i < list.size(); i++){
-//            btn[i] = new Button(this);
-//            btn[i].setText(list.get(i).name);
-//            btn[i].setLayoutParams(params);
-//            btn[i].setId(btn_id[i]);
-//            btn[i].setBackgroundResource(R.drawable.box_round_category_add);
-//            btn[i].setOnClickListener(this);
-//            category_add.addView(btn[i]);
-//        }
 
         //기존의 api 값을 지운다.
         items.clear();
