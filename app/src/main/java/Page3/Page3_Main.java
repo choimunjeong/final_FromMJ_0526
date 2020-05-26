@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -60,6 +62,7 @@ import java.util.Locale;
 import DB.Page3_DbOpenHelper;
 import Page1.EndDrawerToggle;
 import Page1.Main_RecyclerviewAdapter;
+import Page1.Page1;
 import Page2.Page2;
 import Page3_1.Page3_1_Main;
 
@@ -180,7 +183,6 @@ public class Page3_Main extends AppCompatActivity {
         userText2 = (TextView)findViewById(R.id.menu_text2);
         positionBtn = (Switch)findViewById(R.id.menu_postion_btn);
         recyclerView1 = (RecyclerView)findViewById(R.id.menu_recyclerview1);
-
         nestedScrollView = (NestedScrollView)findViewById(R.id.nestScrollView_page3);
 
 
@@ -216,7 +218,7 @@ public class Page3_Main extends AppCompatActivity {
         logo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), Page1.Page1.class);
+                Intent intent = new Intent(getApplicationContext(), Page1.class);
                 intent.addFlags(intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
@@ -366,6 +368,12 @@ public class Page3_Main extends AppCompatActivity {
                 if (autoCompleteTextView.getText().toString() != null) {
                     page3_svg.loadUrl("javascript:setMessage('" + autoCompleteTextView.getText().toString() + "')");
 
+                    //자동입력에서 입력되면 지도 줌아웃됨--------------------------------------------------------------------여기추가
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        page3_svg.zoomBy(0.1f);
+                    }
+
+                    Log.i("svg ㅅ케일", String.valueOf(page3_svg.getScale()));
                     //키보드 내림
                     InputMethodManager mInputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     mInputMethodManager.hideSoftInputFromWindow(autoCompleteTextView.getWindowToken(), 0);
@@ -384,7 +392,6 @@ public class Page3_Main extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 v.getParent().requestDisallowInterceptTouchEvent(true);
-                page3_svg_bg.setSelected(true);
                 return false;
             }
         });
@@ -414,7 +421,7 @@ public class Page3_Main extends AppCompatActivity {
         page3_svg.setVerticalScrollBarEnabled(false);
 
         page3_svg.setWebChromeClient(new WebChromeClient() {
-            public boolean onJsAlert(WebView view, String url, String message, final android.webkit.JsResult result) {
+            public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
                 new AlertDialog.Builder(Page3_Main.this)
                         .setTitle("안내")
                         .setMessage("해당역은 내일로 정차역이 아닙니다.")
@@ -583,6 +590,21 @@ public class Page3_Main extends AppCompatActivity {
                 }
             }
         }
+
+        //지도에서 역 누르면 태그뷰에 추가되는 부분-----------------------------여기추가
+        page3_svg.addJavascriptInterface(new Object(){
+            @JavascriptInterface
+            public void send(final String msg) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            page3_svg.zoomBy(0.1f);
+                        }
+                    }
+                });
+            }
+        }, "android2");
 
 
 

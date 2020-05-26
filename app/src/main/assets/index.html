@@ -4,6 +4,7 @@
 //지도에서 역(동그라미)를 클릭하면 출경도 버튼 띄우는 함수
 function on_click(evt)
 {
+
 	//변수 연결
 	var circle = evt.target;
 
@@ -83,6 +84,9 @@ function on_click(evt)
 
 	pin_start.setAttribute("value", "1_"+name );
 	pin_end.setAttribute("value", "3_"+name );
+
+	//줌 아웃---------------------------------------------------여기추가
+	android2.send('ok');
 }
 
 
