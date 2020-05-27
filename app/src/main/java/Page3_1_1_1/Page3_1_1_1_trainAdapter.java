@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -47,7 +48,7 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
     private ItemTouchHelper touchHelper;
     private ArrayList<Page3_1_1_1_Main.RecycleItem> items = null;
 
-    //프로그레스 인터페이스 ------------------------------------------------여기 추가
+    //프로그레스 인터페이스
     private ForProgress forProgress;
 
     //헤더바 위치가 0이면 true로 바뀌고 1일차로 움직일 수 없게 만듦
@@ -250,24 +251,27 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         private TextView mTimeText, mCourseText1, mCourseText2, mShadowText; // 시간, 경로
         private ImageView search_img;
-        LinearLayout item_touch;
+        private ImageView item_touch;   //<--------------------여기 수정
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            mCourseText1 = (TextView) itemView.findViewById(R.id.course1_Page3_1_1);
-            mCourseText2 = (TextView) itemView.findViewById(R.id.course2_Page3_1_1);
-            mShadowText = (TextView) itemView.findViewById(R.id.searchTime_Page3_1_1_shadow);
-            mTimeText = (TextView) itemView.findViewById(R.id.searchTime_Page3_1_1);
-            search_img = (ImageView) itemView.findViewById(R.id.search_img);
-            item_touch = (LinearLayout) itemView.findViewById(R.id.item_touch);
+            mCourseText1 =  itemView.findViewById(R.id.course1_Page3_1_1);
+            mCourseText2 =  itemView.findViewById(R.id.course2_Page3_1_1);
+            mShadowText =  itemView.findViewById(R.id.searchTime_Page3_1_1_shadow);
+            mTimeText =  itemView.findViewById(R.id.searchTime_Page3_1_1);
+            search_img =  itemView.findViewById(R.id.search_img);
+            item_touch =  itemView.findViewById(R.id.item_touch);
 
 
-            //기차 시간표 부분------------------------------------------------여기 아래 수정함
+            //기차 시간표 부분
             //page3_1_1_1_bottomSheet_Adapter 자바 파일도 수정함
             //page3_1_1_1_apisheet.xml 에 textview 추가 하시길
-            itemView.setOnClickListener(new View.OnClickListener() {
+            item_touch.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    item_touch.setClickable(false);   //------------------------------------------------여기 추가함
+
                     //현재 위치를 받아오기 위함
                     final Context context = v.getContext();
                     final int pos = getAdapterPosition() ;
@@ -363,6 +367,16 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
                     });
 
                     dialog.show();
+
+                    //-------0.3초 뒤에 클릭할 수 있음-----------------------------------------여기 추가함
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            item_touch.setClickable(true);
+                        }
+                    }, 300);
+
                 }
             });
         }
@@ -435,7 +449,6 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
     public  class  Task extends AsyncTask<String, Void, String> {
         private String str;
 
-        //-----------------------------------------------여기추가
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -478,7 +491,7 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
             return receiveMsg;
         }
 
-        //-----------------------------------------------여기추가
+
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);

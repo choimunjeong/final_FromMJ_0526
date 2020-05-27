@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:id="@+id/item_touch"
     android:padding="10dp">
 
     <RelativeLayout
@@ -68,8 +67,10 @@
 
         //기차시간검색 이미지
         <ImageView
+            android:id="@+id/item_touch"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clickable="true"
             android:background="@drawable/box_stroke"/>
 
     </RelativeLayout>
