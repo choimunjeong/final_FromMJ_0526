@@ -64,8 +64,8 @@ public class Page2_1_1_ViewPagerAdapter extends RecyclerView.Adapter<Page2_1_1_V
 
     @Override
     public void onBindViewHolder(Page2_1_1_ViewPagerAdapter.ViewHolder holder, final int position) {
-        // 앞에서 받아온 값이랑 position이 같으면 펼치기
-        if (numCourse == 1) {
+        // 앞에서 받아온 값이랑 position이 같으면 펼치기                           오류 : 리사이클러뷰 확장하면 관광지 안보임
+        if (numCourse == 1 && isFirst) {   //<--------------------------------------이 부분 수정했는데 지연언니 기기에서 오류 안나면 반영 안해도 됨
             //height 값을 임의로 준다.
             int dpValue = 380;
             float d = context.getResources().getDisplayMetrics().density;
@@ -85,8 +85,6 @@ public class Page2_1_1_ViewPagerAdapter extends RecyclerView.Adapter<Page2_1_1_V
                 determine_API = "delete";
             } else
                 determine_API = "make";
-        } else {
-            determine_API = "delete";
         }
 
         //첫번째 아이템은 펼쳐져서 보임
