@@ -356,7 +356,7 @@ public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_
                     dbOpenHelper.open();
                     dbOpenHelper.deleteColumnByKey(db_key);
                     for(int i=0; i < list.size(); i++){
-                        dbOpenHelper.updateColumn(
+                        dbOpenHelper.insertColumn(
                                 "no",
                                 db_key,
                                 list.get(i).date,

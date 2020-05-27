@@ -69,16 +69,6 @@ public class Page1_1_1_Adapter extends RecyclerView.Adapter<Page1_1_1_Adapter.Vi
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        if(isFirst) {
-            if(position==0){
-
-                selectedItems.put(position, true);
-                prePosition = position;
-            }
-            else{
-                isFirst = false;
-            }
-        }
 
         listForSecond.clear();
 
@@ -90,7 +80,7 @@ public class Page1_1_1_Adapter extends RecyclerView.Adapter<Page1_1_1_Adapter.Vi
 
         //리사이클러뷰 넣는 부분
         holder.recyclerView.setLayoutManager( new LinearLayoutManager(context));
-        adapter = new Page1_1_1_SecondAdapter(items , this);
+        adapter = new Page1_1_1_SecondAdapter(listForSecond , this);
         holder.recyclerView.setAdapter(adapter);
         holder.cityCount.setText("" + listForSecond.size());
 
@@ -117,6 +107,8 @@ public class Page1_1_1_Adapter extends RecyclerView.Adapter<Page1_1_1_Adapter.Vi
                 prePosition = position;
             }
         });
+
+
     }
 
     @Override

@@ -176,7 +176,6 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
         positionBtn = (Switch)findViewById(R.id.menu_postion_btn);
         alramBtn = (Switch)findViewById(R.id.menu_alram_btn);
         recyclerView1 = (RecyclerView)findViewById(R.id.menu_recyclerview1);
-        //**************여기 추가**************************************************************************
         loading_progress = findViewById(R.id.page1_progress);
 
 
@@ -276,25 +275,6 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         scrollView = (NestedScrollView) findViewById(R.id.nestScrollView_page1);
 
-
-
-        //위아래로 드래그 했을 때 변화를 감지하는 부분
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            int oldY = 0;
-            @Override
-            public void onScrollChanged() {
-                int scrollY = scrollView.getScrollY(); // For ScrollView
-                Log.i("X-Y", "-" + scrollY);
-                if(scrollY > oldY){
-                    Log.i("아래로 드래그", "^^");
-                    oldY = scrollY;
-                } else {
-                    Log.i("위로 드래그", "^^");
-                    oldY = scrollY;
-                }
-                // DO SOMETHING WITH THE SCROLL COORDINATES
-            }
-        });
 
         SharedPreferences preferences =getSharedPreferences("a", MODE_PRIVATE);
         int firstviewShow = preferences.getInt("First", 0);

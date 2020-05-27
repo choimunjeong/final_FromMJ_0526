@@ -57,7 +57,7 @@ public class Page1_1_1 extends AppCompatActivity {
 
     ImageButton logo;
 
-    //*******************************여기부터 추가***********************************************************
+
     //메뉴 관련
     private Context context;
     private ImageButton menu_edit;
@@ -68,11 +68,11 @@ public class Page1_1_1 extends AppCompatActivity {
     private Switch positionBtn;
     private Switch alramBtn;
     Main_RecyclerviewAdapter adapter2;
-    //ArrayList<String> name = new ArrayList<>();
+    ArrayList<String> name2 = new ArrayList<>();
     private Toolbar toolbar2;
     private DrawerLayout drawer;
     private EndDrawerToggle mDrawerToggle;
-    //******************************************************************************************
+
 
 
     @Override
@@ -112,7 +112,7 @@ public class Page1_1_1 extends AppCompatActivity {
 
         //메뉴 안 내용 구성
         recyclerView1.setLayoutManager(new LinearLayoutManager(this));
-        adapter2 = new Main_RecyclerviewAdapter(name, context);
+        adapter2 = new Main_RecyclerviewAdapter(name2, context);
         recyclerView1.setAdapter(adapter2);
 
         logo = (ImageButton) findViewById(R.id.main_logo_page1_1_1);
@@ -130,7 +130,10 @@ public class Page1_1_1 extends AppCompatActivity {
             }
         });
 
-
+        //리사이클러뷰 헤더
+        name2.add("0");
+        name2.add("1");
+        name2.add("2");
 
         // DB열기
         mDbOpenHelper = new DbOpenHelper(this);

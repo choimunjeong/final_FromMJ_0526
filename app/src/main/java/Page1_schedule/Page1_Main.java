@@ -489,7 +489,6 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
                 Day_items.clear();
 
                 if (position != arrayLocal.size() - 1){
-                    //---------------------------여기 추가: api 연결하기 전에 인터넷 연결 검사(이래야 뻑이 안남)
                     if(isNetworkConnect != 3 && Integer.parseInt(forcomparedate.trim())  <= Integer.parseInt(stationWithTransfer.get(position).substring(0,8).trim()) ){
                         send_Api(stationWithTransfer.get(position));
                         pastTime = false;
@@ -694,10 +693,12 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         protected String doInBackground(String... strings) {
             URL url = null;
             try{
-                //Z2ABtX1mu7Z%2FVsuir30gFJ%2BRDlNdWq8ujTgba2ZIu%2BRRiT65hy%2BOVzjmZxFXW04kGY08%2FgNrX7w%2BCexXYOz6Jg%3D%3D
+                //한솔 : tQVUU9RPcLsBmX4nqBFMUDqgvO3nBdfcZI%2FS8GQndON35%2BjzjShtdnH94CNN6d%2Fhb61uX1mOz7lWWD5rA6LNFg%3D%3D
+                //문정 : 7LT0Q7XeCAuzBmGUO7LmOnrkDGK2s7GZIJQdvdZ30lf7FmnTle%2BQoOqRKpjcohP14rouIrtag9KOoCZe%2BXuNxg%3D%3D
+                //지연 : Z2ABtX1mu7Z%2FVsuir30gFJ%2BRDlNdWq8ujTgba2ZIu%2BRRiT65hy%2BOVzjmZxFXW04kGY08%2FgNrX7w%2BCexXYOz6Jg%3D%3D
                 url = new URL("http://openapi.tago.go.kr/openapi/service/TrainInfoService/" +
-                        "getStrtpntAlocFndTrainInfo?serviceKey=7LT0Q7XeCAuzBmGUO7LmOnrkDGK2s7GZIJQdvdZ30lf7FmnTle%2BQoOqRKpjcohP14rouIrtag9KOoCZe%2BXuNxg%3D%3D" +
-                        "numOfRows=30" +
+                        "getStrtpntAlocFndTrainInfo?serviceKey=Z2ABtX1mu7Z%2FVsuir30gFJ%2BRDlNdWq8ujTgba2ZIu%2BRRiT65hy%2BOVzjmZxFXW04kGY08%2FgNrX7w%2BCexXYOz6Jg%3D%3D" +
+                        "&numOfRows=30" +
                         "&pageNo=1&" +
                         "depPlaceId=" + startCode +
                         "&arrPlaceId=" + endCode +

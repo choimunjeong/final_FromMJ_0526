@@ -161,29 +161,32 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
                 String RESULT = task.execute().get();
                 Log.i("전달 받은 값", RESULT);
 
-                //사진링크, 타이틀(관광명), 분야뭔지 분리
-                name_1 = RESULT.split("\n");
+                if(RESULT.length() != 0) {  //-----------------------------관광API 다 쓰면
 
-                for (int i = 0; i < name_1.length; i++) {
-                    name_2 = name_1[i].split("  ");
+                    //사진링크, 타이틀(관광명), 분야뭔지 분리
+                    name_1 = RESULT.split("\n");
 
-                    //img_Url이 없는 경우도 있기 때문에, length = 3 = 있음/ 2 = 없음
-                    if (name_2.length == 3) {
-                        contentid[i] = name_2[0];
-                        img_Url[i] = name_2[1];
-                        name[i] = name_2[2];
-                    } else {
-                        contentid[i] = name_2[0];
-                        img_Url[i] = null;
-                        name[i] = name_2[1];
+                    for (int i = 0; i < name_1.length; i++) {
+                        name_2 = name_1[i].split("  ");
+
+                        //img_Url이 없는 경우도 있기 때문에, length = 3 = 있음/ 2 = 없음
+                        if (name_2.length == 3) {
+                            contentid[i] = name_2[0];
+                            img_Url[i] = name_2[1];
+                            name[i] = name_2[2];
+                        } else {
+                            contentid[i] = name_2[0];
+                            img_Url[i] = null;
+                            name[i] = name_2[1];
+                        }
                     }
-                }
 
-                //리사이클러에 들어갈 데이터를 넣는다
-                for (int i = 0; i < name_1.length; i++) {
-                    items.add(new Recycler_item(img_Url[i], name[i], contentid[i] , subject, "", ""));
-                }
+                    //리사이클러에 들어갈 데이터를 넣는다
+                    for (int i = 0; i < name_1.length; i++) {
+                        items.add(new Recycler_item(img_Url[i], name[i], contentid[i], subject, "", ""));
+                    }
 
+                }
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             } catch (ExecutionException ex) {
@@ -392,7 +395,7 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
                             }
                             if (parser.getName().equals("title")) {
                                 title = true;
-                                //Log.d("태그 시작", "태그 시작4");
+                                Log.d("태그 시작", "태그 시작4");
                             }
                             break;
                         }
@@ -408,7 +411,7 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
                             }
                             if (title) {
                                 returnResult += parser.getText() + "\n";
-                                //Log.d("태그 받음", "태그받음4");
+                                Log.d("태그 받음", "태그받음4");
                                 title = false;
                             }
                             break;
