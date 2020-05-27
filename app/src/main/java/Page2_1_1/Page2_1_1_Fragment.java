@@ -4,16 +4,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.example.hansol.spot_200510_hs.R;
 
@@ -34,12 +38,19 @@ import DB.Heart_page;
 import Page1.Page1_1_1;
 import Page2.Recycler_item;
 import Page2_X.Page2_X_CategoryBottom;
+import Page2_X.Page2_X_Main;
+import Page3.Page3_Main;
+
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
+import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
 
 public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
     Page2_1_1 mainActivity;
     private String  station, subject, isMake;
     private String contentTypeId, cat1, cat2;
     private DbOpenHelper mDbOpenHelper;
+    private String id;
+    private ProgressBar loading_progress;
 
     //역 이름을 받아서 지역코드랑 시군구코드 받기 위한 배열
     int station_code = 49;
@@ -99,8 +110,35 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
         mDbOpenHelper.open();
         mDbOpenHelper.create();
 
+        //----------프로그레스바--------------------------------------------여기 추가
+        loading_progress = v.findViewById(R.id.page2_1_1_progress);
+
+
         Button btn = v.findViewById(R.id.page2_1_fragment_more_btn);
         btn.setText("'" + station + "'의 다른 관광지 더 보기");
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //프로그레스바 실행---------------------------------------------------------------여기 추가
+                loading_progress.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(getContext(), Page2_X_Main.class);
+                intent.putExtra("station", station);
+                intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+
+                //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loading_progress.setVisibility(View.INVISIBLE);
+                    }
+                }, 400);
+            }
+        });
 
         //리사이클러뷰 구현 부분
         RecyclerView recyclerView = v.findViewById(R.id.page2_1_fragment_recyclerview);
@@ -108,6 +146,7 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
         recyclerView.setHasFixedSize(true);
 
         // mkae = api 연결 // delete = api 연결 X
+        Log.i("뭔데page2_1_1", isMake);
         if(isMake.equals("make")) {
             //txt 값 읽기
             settingList();
@@ -122,29 +161,32 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
                 String RESULT = task.execute().get();
                 Log.i("전달 받은 값", RESULT);
 
-                //사진링크, 타이틀(관광명), 분야뭔지 분리
-                name_1 = RESULT.split("\n");
+                if(RESULT.length() != 0) {  //-----------------------------관광API 다 쓰면
 
-                for (int i = 0; i < name_1.length; i++) {
-                    name_2 = name_1[i].split("  ");
+                    //사진링크, 타이틀(관광명), 분야뭔지 분리
+                    name_1 = RESULT.split("\n");
 
-                    //img_Url이 없는 경우도 있기 때문에, length = 3 = 있음/ 2 = 없음
-                    if (name_2.length == 3) {
-                        contentid[i] = name_2[0];
-                        img_Url[i] = name_2[1];
-                        name[i] = name_2[2];
-                    } else {
-                        contentid[i] = name_2[0];
-                        img_Url[i] = null;
-                        name[i] = name_2[1];
+                    for (int i = 0; i < name_1.length; i++) {
+                        name_2 = name_1[i].split("  ");
+
+                        //img_Url이 없는 경우도 있기 때문에, length = 3 = 있음/ 2 = 없음
+                        if (name_2.length == 3) {
+                            contentid[i] = name_2[0];
+                            img_Url[i] = name_2[1];
+                            name[i] = name_2[2];
+                        } else {
+                            contentid[i] = name_2[0];
+                            img_Url[i] = null;
+                            name[i] = name_2[1];
+                        }
                     }
-                }
 
-                //리사이클러에 들어갈 데이터를 넣는다
-                for (int i = 0; i < name_1.length; i++) {
-                    items.add(new Recycler_item(img_Url[i], name[i], contentid[i] , subject));
-                }
+                    //리사이클러에 들어갈 데이터를 넣는다
+                    for (int i = 0; i < name_1.length; i++) {
+                        items.add(new Recycler_item(img_Url[i], name[i], contentid[i], subject, "", ""));
+                    }
 
+                }
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             } catch (ExecutionException ex) {
@@ -204,9 +246,9 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
     }
 
     @Override
-    public void make_db(String countId, String name, String cityname) {
+    public void make_db(String countId, String name, String cityname, String type, String image, String click) {
         mDbOpenHelper.open();
-        mDbOpenHelper.insertColumn(countId, name, cityname);
+        mDbOpenHelper.insertColumn(countId, name, cityname, type, image, click);
         mDbOpenHelper.close();
     }
 
@@ -217,6 +259,22 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
         mDbOpenHelper.close();
 
         delete_dialog();
+    }
+
+    @Override
+    public String isClick(String countid) {
+        mDbOpenHelper.open();
+        Cursor iCursor = mDbOpenHelper.selectIdCulumns(countid);
+        Log.d("showDatabase", "DB Size: " + iCursor.getCount());
+
+        while (iCursor.moveToNext()) {
+            String userId = iCursor.getString(iCursor.getColumnIndex("userid"));
+
+            id = userId;
+        }
+        mDbOpenHelper.close();
+
+        return id;
     }
 
     @Override
@@ -272,8 +330,8 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
     {
         @Override
         protected void onPreExecute() {
-            //초기화 단계에서 사용
-//            progressBar.setVisibility(View.VISIBLE);
+            //프로그레스바 실행---------------------------------------------------------------여기 추가
+            loading_progress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -337,7 +395,7 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
                             }
                             if (parser.getName().equals("title")) {
                                 title = true;
-                                //Log.d("태그 시작", "태그 시작4");
+                                Log.d("태그 시작", "태그 시작4");
                             }
                             break;
                         }
@@ -353,7 +411,7 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
                             }
                             if (title) {
                                 returnResult += parser.getText() + "\n";
-                                //Log.d("태그 받음", "태그받음4");
+                                Log.d("태그 받음", "태그받음4");
                                 title = false;
                             }
                             break;
@@ -376,6 +434,8 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+            loading_progress.setVisibility(View.INVISIBLE);
         }
     }
 

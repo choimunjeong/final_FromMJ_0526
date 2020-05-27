@@ -12,11 +12,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import com.example.hansol.spot_200510_hs.Page0;
 import com.example.hansol.spot_200510_hs.R;
+
 import java.util.List;
 
-import Page2.Page2;
+import Menu.Page4_2;
 import Page2_X.Page2_X;
 import Page3.Page3_Main;
 
@@ -36,7 +38,7 @@ public class Second_RecyclerviewAdapater extends RecyclerView.Adapter<Second_Rec
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.menu_second_recyclerviw_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.menu_second_recyclerview, parent, false);
         return new ViewHolder(v);
     }
 
@@ -49,7 +51,7 @@ public class Second_RecyclerviewAdapater extends RecyclerView.Adapter<Second_Rec
 
                 switch (items.get(position)){
                     case "나의 여행 기록":
-                        Intent intent = new Intent(context, Page3_Main.class);
+                        Intent intent = new Intent(context, Page4_2.class);
                         context.startActivity(intent);
                         break;
                     case "여행유형 테스트":

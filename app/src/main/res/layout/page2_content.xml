@@ -12,6 +12,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/spot_error_txt2"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:text="관광지를 불러올 수 없습니다.\n 인터넷 연결을 확인해주세요."
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="#666666"
+            android:background="@drawable/box_round"
+            android:visibility="invisible"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/page2_recyclerview"
@@ -24,4 +35,4 @@
 
     </RelativeLayout>
 
-</androidx.core.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>

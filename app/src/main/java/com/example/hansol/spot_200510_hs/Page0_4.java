@@ -8,6 +8,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.airbnb.lottie.LottieAnimationView;
+
+import Page1.Page1;
+
 public class Page0_4 extends AppCompatActivity implements View.OnClickListener {
     TextView a1_plan, a2_free;
     TextView page4_later, page4_back;
@@ -38,7 +42,10 @@ public class Page0_4 extends AppCompatActivity implements View.OnClickListener {
         page4_later.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Page0_4.this, Page0.class);
+                score[1] = 3; score[4] = 1; score[5] = 0;
+                Intent intent = new Intent(Page0_4.this, Page1.class);
+                intent.putExtra("Main", score);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
             }
         });

@@ -11,6 +11,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
+
         <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -38,8 +39,8 @@
             android:layout_below="@+id/main_title"
             android:layout_marginTop="32dp"
             android:orientation="horizontal"
-
             android:layout_centerInParent="true">
+
             // 스케쥴짜기 버튼
             <ImageButton
                 android:id="@+id/main_schedule"
@@ -48,6 +49,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/ic_main1"
                 android:layout_marginRight="16dp" />
+
 
             // 일정등록 버튼
             <ImageButton
@@ -68,6 +70,8 @@
                 android:background="@drawable/ic_main3"
                 android:layout_marginRight="16dp"
                 android:layout_marginLeft="16dp"/>
+
+
         </LinearLayout>
 
         // 안내 멘트
@@ -145,23 +149,23 @@
             android:layout_marginTop="16dp">
 
             // 검색 버튼
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal">-->
 
-                <TextView
-                    android:padding="15dp"
-                    android:id="@+id/search_spot"
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
-                    android:background="@drawable/ic_icon_search_page1"
-                    android:gravity="center|bottom"
-                    android:textSize="11dp"
-                    android:textColor="#000000"
-                    android:fontFamily="@font/notosans_extralight"
-                    android:clickable="true"
-                    android:layout_marginRight="16dp"/>
+<!--                <TextView-->
+<!--                    android:padding="15dp"-->
+<!--                    android:id="@+id/search_spot"-->
+<!--                    android:layout_width="96dp"-->
+<!--                    android:layout_height="96dp"-->
+<!--                    android:background="@drawable/ic_icon_search_page1"-->
+<!--                    android:gravity="center|bottom"-->
+<!--                    android:textSize="11dp"-->
+<!--                    android:textColor="#000000"-->
+<!--                    android:fontFamily="@font/notosans_extralight"-->
+<!--                    android:clickable="true"-->
+<!--                    android:layout_marginRight="16dp"/>-->
 
                 // 뷰 동적 생성
                 <LinearLayout
@@ -172,7 +176,7 @@
                     android:layout_marginRight="16dp">
 
                 </LinearLayout>
-            </LinearLayout>
+<!--            </LinearLayout>-->
         </HorizontalScrollView>
 
         // 내일로 안내 스크롤뷰

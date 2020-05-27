@@ -1,33 +1,52 @@
 package Page2;
 
+import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.widget.NestedScrollView;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hansol.spot_200510_hs.R;
-
-import net.daum.mf.map.api.MapPOIItem;
-import net.daum.mf.map.api.MapPoint;
+import com.google.android.material.appbar.AppBarLayout;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -35,10 +54,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import DB.DbOpenHelper;
+import Page1.EndDrawerToggle;
+import Page1.Main_RecyclerviewAdapter;
 import Page1.Page1_1_1;
 import Page1.Page2_1;
 import Page2_1_1.Page2_1_1;
 import Page2_1_1.course;
+import Page2_X.NetworkStatus;
 import Page2_X.Page2_X_CategoryBottom;
 import Page3.Page3_Main;
 
@@ -47,6 +69,18 @@ import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
 
 public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
 
+    int station_code = 999;
+    String[] arr_line = null;
+    String[] _name = new String[station_code];           //txt에서 받은 역이름
+    String[] _areaCode = new String[station_code];       //txt에서 받은 지역코드
+    String[] _sigunguCode = new String[station_code];    //txt에서 받은 시군구코드
+    String[] _x = new String[station_code];              //txt에서 받은 x좌표
+    String[] _y = new String[station_code];              //txt에서 받은 y좌표
+    String[] _benefitURL = new String[station_code];     //txt에서 받은 혜택url
+    String st_name, areaCode, sigunguCode, benefitURL, cityName;            //전달받은 역의 지역코드, 시군구코드, 혜택URL, 도시 이름
+    Double x, y;                                         //전달받은 역의 x,y 좌표
+
+
     ArrayList<course> items = new ArrayList<>();
 
     //리사이클러뷰에 연결할 데이터
@@ -54,31 +88,61 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
     Page2_CardView_adapter adapter;
     private DbOpenHelper mDbOpenHelper;
 
+    //레이아웃 관련
+    AppBarLayout appBarLayout;
+    boolean isExpand = false;
+    TextView spot_error_txt;
+    boolean isLoadData = true;
+
+    //메뉴 관련
+    private ImageButton menu_edit;
+    private ImageView userImg;
+    private TextView userText1;
+    private TextView userText2;
+    private RecyclerView recyclerView1;
+    private Switch positionBtn;
+    private Switch alramBtn;
+    Main_RecyclerviewAdapter adapter2;
+    ArrayList<String> name = new ArrayList<>();
+    private Toolbar toolbar2;
+    private DrawerLayout drawer;
+    private EndDrawerToggle mDrawerToggle;
+    private Context context;
+
+    //기기의 높이를 구한다.
+    float d;
+    int height;
+
     Page2 mainActivity;
-    private String  subject, station;
+    private String  subject, station, id;
     private String contentTypeId, cat1, cat2;
 
     //역 이름을 받아서 지역코드랑 시군구코드 받기 위한 배열
-    int station_code = 49;
     String returnResult, url;
 
     String name_1[];  //returnResult를 줄바꿈 단위로 쪼개서 넣은 배열/ name_1[0]에는 한 관광지의 이름,url,contentId,위치가 다 들어가 있다.
     String name_2[] = new String[3];  //name_1를 "  " 단위로 쪼개서 넣은 배열/ [0]= contentID/ [1]=mapx/ [2]에= mapy/ [3]= img_Url/ [4]= name이 들어가 있다.
 
     //xml 파싱한 값을 분류해서 쪼개 넣음
-    String name[] = new String[99999];        //관광지 이름
-    String img_Url[] = new String[9999];     //이미지 URL
-    String contentid[] = new String[99999];   //관광지ID
+    String name2[] = new String[station_code];        //관광지 이름
+    String img_Url[] = new String[station_code];     //이미지 URL
+    String contentid[] = new String[station_code];   //관광지ID
+    String sigungucode_arr[] = new String[station_code];   // 시군구 코드
+    String areacode_arr[] = new String[station_code];  // area 코드
 
     //page2 코스 텍스트
     TextView t1, t2, t3, t4, t5, t6, t7, t8;
 
     TextView subject_title;
 
+    ImageButton logo;
+
     Button all_cat_btn, schedulePlus_btn,schedulePlus_btn2;
 
     //page2 코스 더보기
     TextView courseMore;
+
+    LinearLayout courseBox1, courseBox2; // 코스 눌렀을 때
 
     //관광지 주제별 코스를 저장하는 배열
     String getSubject;
@@ -88,21 +152,74 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
     String[] st4;
 
     ScrollView scrollView;
-    boolean isLoadData = true;
     int page = 1;     //api 페이지 수
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    //------------------------------------------------------여기 추가
+    private ProgressBar loading_progress;
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_page2);
 
+        //기기의 높이를 구한다.
+        d = Page2.this.getResources().getDisplayMetrics().density;
+        Display display = getWindowManager().getDefaultDisplay();  // in Activity
+        Point size = new Point();
+        display.getRealSize(size);
+        height = size.y - (int)(100 * d);
+
         mDbOpenHelper = new DbOpenHelper(Page2.this);
         mDbOpenHelper.open();
         mDbOpenHelper.create();
 
-        scrollView = (ScrollView)findViewById(R.id.page2_scroll);
-        scrollView.smoothScrollBy(0, 0);
+        //scrollView = (ScrollView)findViewById(R.id.page2_scroll);
+        //scrollView.smoothScrollBy(0, 0);
+
+        //객체 연결
+        context = getApplicationContext();
+        toolbar2 = findViewById(R.id.toolbar);
+        drawer = findViewById(R.id.drawer_layout);
+        userImg = (ImageView)findViewById(R.id.menu_userImage);
+        userText1 = (TextView)findViewById(R.id.menu_text1);
+        userText2 = (TextView)findViewById(R.id.menu_text2);
+        positionBtn = (Switch)findViewById(R.id.menu_postion_btn);
+        recyclerView1 = (RecyclerView)findViewById(R.id.menu_recyclerview1);
+        //**************여기 추가**************************************************************************
+        loading_progress = findViewById(R.id.page2_progress);
+
+
+
+        mDrawerToggle = new EndDrawerToggle(this,drawer,toolbar2,R.string.open_drawer,R.string.close_drawer){
+            @Override //드로어가 열렸을때
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+            @Override //드로어가 닫혔을때
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+
+        setSupportActionBar(toolbar2);
+        drawer.addDrawerListener(mDrawerToggle);
+
+        //메뉴 안 내용 구성
+        recyclerView1.setLayoutManager(new LinearLayoutManager(this));
+        adapter2 = new Main_RecyclerviewAdapter(name, context);
+        recyclerView1.setAdapter(adapter2);
+
+        //리사이클러뷰 헤더
+        name.add("0");
+        name.add("1");
+        name.add("2");
+
+        //툴바 타이틀 없애기
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
         t1 = (TextView) findViewById(R.id.page2_course_txt1);
         t2 = (TextView) findViewById(R.id.page2_course_txt2);
@@ -113,9 +230,66 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         t7 = (TextView) findViewById(R.id.page2_course2_txt3);
         t8 = (TextView) findViewById(R.id.page2_course2_txt4);
 
+        courseBox1 = (LinearLayout) findViewById(R.id.page2_course_1);
+        courseBox2 = (LinearLayout) findViewById(R.id.page2_course_2);
+
         subject_title = (TextView) findViewById(R.id.page2_cat);
+        spot_error_txt = (TextView)findViewById(R.id.spot_error_txt2);
 
         courseMore = (TextView) findViewById(R.id.page2_courseMore);
+        appBarLayout = (AppBarLayout)findViewById(R.id.app_bar);
+
+        logo = (ImageButton) findViewById(R.id.main_logo);
+
+        logo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Page2.this, Page1.Page1.class);
+                intent.addFlags(intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
+                //overridePendingTransition(0,0);
+                startActivity(intent);
+
+            }
+        });
+
+
+
+        //위아래로 드래그 했을 때 변화를 감지하는 부분
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (Math.abs(verticalOffset) == appBarLayout.getTotalScrollRange()) {
+
+                    //Log.d("접혔어!!!!", "접혔어!!");
+                    if(isExpand){
+                        changeVisibility(false, height);
+                        isExpand = false;
+
+                    }
+
+                } else if (verticalOffset == 0) {
+                    // Log.d("확장됐어!!", "확장쓰!!");
+                } else {
+                    // Log.d("중간이야!!!", "중간이야!!!!");
+                }
+            }
+        });
+
+        //세로 드래그 문제를 해결하기 위한 부분
+        //https://do-dam.tistory.com/entry/CoordinatorLayout-App-Bar-%EB%93%9C%EB%9E%98%EA%B7%B8-%EB%B9%84%ED%99%9C%EC%84%B1%ED%99%94-%EC%83%81%EB%8B%A8-%EC%8A%A4%ED%81%AC%EB%A1%A4-%EA%B5%AC%ED%98%84
+        if (appBarLayout.getLayoutParams() != null) {
+            CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)appBarLayout.getLayoutParams();
+            AppBarLayout.Behavior appBarLayoutBehaviour = new AppBarLayout.Behavior();
+            appBarLayoutBehaviour.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
+                @Override
+                public boolean canDrag(@NonNull AppBarLayout appBarLayout) {
+                    return false;
+                }
+            });
+            layoutParams.setBehavior(appBarLayoutBehaviour);
+        }
 
 
         //텍스트뷰 밑줄
@@ -140,13 +314,13 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         schedulePlus_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList <String> course = new ArrayList<>();
-                course.add(t1.getText().toString());
-                course.add(t2.getText().toString());
-                course.add(t3.getText().toString());
-                course.add(t4.getText().toString());
+                ArrayList <String> page2_course = new ArrayList<>();
+                page2_course.add(t1.getText().toString());
+                page2_course.add(t2.getText().toString());
+                page2_course.add(t3.getText().toString());
+                page2_course.add(t4.getText().toString());
                 Intent intent = new Intent(getApplicationContext(), Page3_Main.class);
-                intent.putExtra("course", course);
+                intent.putExtra("page2_course", page2_course);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
@@ -156,13 +330,13 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         schedulePlus_btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList <String> course2 = new ArrayList<>();
-                course2.add(t5.getText().toString());
-                course2.add(t6.getText().toString());
-                course2.add(t7.getText().toString());
-                course2.add(t8.getText().toString());
+                ArrayList <String> page2_course2 = new ArrayList<>();
+                page2_course2.add(t5.getText().toString());
+                page2_course2.add(t6.getText().toString());
+                page2_course2.add(t7.getText().toString());
+                page2_course2.add(t8.getText().toString());
                 Intent intent = new Intent(getApplicationContext(), Page3_Main.class);
-                intent.putExtra("course2", (Serializable) course2);
+                intent.putExtra("page2_course2", (Serializable) page2_course2);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
@@ -174,9 +348,38 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         // 메인에서 받아올 때
         if (intent.hasExtra("subject_name")) {
             subject = intent.getStringExtra("subject_name");
+
+            //인터넷 유무 체크
+            int isNetworkConnect = NetworkStatus.getConnectivityStatus(getApplicationContext());
+
+            if(isNetworkConnect == 3) {
+                spot_error_txt.setVisibility(View.VISIBLE);
+                Log.d("ddd","ddd");
+            }
+            //url에 들어갈 contentTypeId, cat1, cat2 코드를 찾기
+            else {
+                //url에 들어갈 contentTypeId, cat1, cat2 코드를 찾기
+                url_code();
+                settingList();
+                settingAPI_Data();
+
+            }
+
+
         } else {
             // 카테고리에서 받아올 때
             subject = intent.getStringExtra("subject_name_from_Page2_1");
+            int isNetworkConnect = NetworkStatus.getConnectivityStatus(getApplicationContext());
+
+            if(isNetworkConnect == 3) {
+                spot_error_txt.setVisibility(View.VISIBLE);
+            }
+            else {
+                url_code();
+                settingAPI_Data();
+                //url에 들어갈 contentTypeId, cat1, cat2 코드를 찾기
+
+            }
         }
 
         Toast.makeText(getApplicationContext(), getSubject, Toast.LENGTH_SHORT).show();
@@ -188,57 +391,114 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         recyclerView.setHasFixedSize(true);
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(gridLayoutManager);
-        //recyclerView.setAdapter(adapter);
-        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                //아이템들은 한 칸씩 차지
-                return 1;
-            }
-        });
+        recyclerView.setAdapter(adapter);
+//        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+//            @Override
+//            public int getSpanSize(int position) {
+//                //아이템들은 한 칸씩 차지
+//                return 1;
+//            }
+//        });
 
         recyclerView.setLayoutManager( gridLayoutManager);
         recyclerView.setHasFixedSize(true);
 
-        //url에 들어갈 contentTypeId, cat1, cat2 코드를 찾기
-        url_code();
-
-        //관광 api 연결
-      settingAPI_Data();
 
         //리사이클러뷰 연결
         adapter = new Page2_CardView_adapter(cardview_items, mainActivity, "cityname", this);
         recyclerView.setAdapter(adapter);
 
+        //코스더보기
         courseMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //프로그레스바 실행---------------------------------------------------------------여기 추가
+                loading_progress.setVisibility(View.VISIBLE);
+
                 Toast.makeText(getApplicationContext(), subject, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(Page2.this, Page2_1_1.class);
                 intent.putExtra("subject_title", subject);
-                intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+
+                //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loading_progress.setVisibility(View.INVISIBLE);
+                    }
+                }, 400);
             }
         });
 
+        // 아이템 뷰 선택했을 때
+        // 첫번째 코스 선택 시
+        courseBox1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //프로그레스바 실행---------------------------------------------------------------여기 추가
+                loading_progress.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(getApplicationContext(), Page2_1_1.class);
+                intent.putExtra("position", 0);
+                intent.putExtra("subject_title", subject);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+
+                //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loading_progress.setVisibility(View.INVISIBLE);
+                    }
+                }, 400);
+            }
+        });
+
+        // 두 번째 코스 선택 시
+        courseBox2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //프로그레스바 실행---------------------------------------------------------------여기 추가
+                loading_progress.setVisibility(View.VISIBLE);
+
+                Intent intent = new Intent(getApplicationContext(), Page2_1_1.class);
+                intent.putExtra("position", 1);
+                intent.putExtra("subject_title", subject);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+
+                //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loading_progress.setVisibility(View.INVISIBLE);
+                    }
+                }, 400);
+            }
+        });
+
+
         //more loading
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            scrollView.setOnScrollChangeListener(new ScrollView.OnScrollChangeListener() {
-                int  visibleItemCount,  totalItemCount, pastVisiblesItems;
-                @Override
-                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                    Log.i("스크롤뷰", String.valueOf(scrollY));
+        final NestedScrollView nestedScrollView = (NestedScrollView)findViewById(R.id.nestScrollView2);
+        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            int  visibleItemCount,  totalItemCount, pastVisiblesItems;
 
-                    visibleItemCount = gridLayoutManager.getChildCount();
-                    totalItemCount = gridLayoutManager.getItemCount() ;
-                    pastVisiblesItems = gridLayoutManager.findLastVisibleItemPosition()+1;
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
-                    Log.i("비져블", String.valueOf(visibleItemCount));
-                    Log.i(" 토탈", String.valueOf( totalItemCount));
-                    Log.i("패스트", String.valueOf(pastVisiblesItems));
+                if(v.getChildAt(v.getChildCount() -1) != null) {
+                    if( (scrollY >= (v.getChildAt(v.getChildCount() -1).getMeasuredHeight() -  v.getMeasuredHeight() )) && scrollY > oldScrollY) {
 
-                    if(scrollY > 800 &&  (pastVisiblesItems == totalItemCount)){
+                        visibleItemCount = gridLayoutManager.getChildCount();
+                        totalItemCount = gridLayoutManager.getItemCount() ;
+                        pastVisiblesItems = gridLayoutManager.findFirstVisibleItemPosition();
 
                         //받아온 api 개수가 20개가 안되면 다음 페이지가 없다고 판단. false로 바꿔줌
                         if(name_1.length < 5){
@@ -246,7 +506,7 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
                         }
 
                         //isLoadData가 true이면
-                        else if(isLoadData) {
+                        if(isLoadData) {
                             if( (visibleItemCount + pastVisiblesItems) >= totalItemCount ){
 
                                 page++;
@@ -256,9 +516,8 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
 
                                 //메시지 갱신 위치
                                 adapter.notifyDataSetChanged();
+
                             }
-
-
                         }
 
                         //데이터가 더 없을 때
@@ -267,13 +526,55 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
                         }
                     }
                 }
-            });
-        }
-
+            }
+        });
 
 
 
     }
+
+    //txt 돌려 역 비교할 배열 만들기(이름 지역코드 동네코드)<-로 구성
+    private void settingList(){
+        String readStr = "";
+        AssetManager assetManager = getResources().getAssets();
+        InputStream inputStream = null;
+        try{
+            inputStream = assetManager.open("station_code.txt");
+            //버퍼리더에 대한 설명 참고 : https://coding-factory.tistory.com/251
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String str = null;
+            while (((str = reader.readLine()) != null)){ readStr += str + "\n";}
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String[] arr_all = readStr.split("\n"); //txt 내용을 줄바꿈 기준으로 나눈다.
+
+        //한 줄의 값을 띄어쓰기 기준으로 나눠서, 역명/지역코드/시군구코드 배열에 넣는다.
+        for(int i=0; i <arr_all.length; i++) {
+            arr_line = arr_all[i].split(" ");
+
+            _name[i] = arr_line[0];         //서울
+            _areaCode[i] = arr_line[1];     //1
+            _sigunguCode[i] = arr_line[2];  //0
+            _y[i] = arr_line[3];            //y좌표
+            _x[i] = arr_line[4];            //x좌표
+            _benefitURL[i] = arr_line[5];
+        }
+    }
+
+    private String compareStation(String area, String sigunguCode){
+        Log.i("맞냐?? ", area + "/" + sigunguCode);
+        for(int p = 0; p < 234;p ++){
+            if(_sigunguCode[p].trim().equals(sigunguCode.trim()) && _areaCode[p].trim().equals(area.trim())){
+                Log.i("맞냐 ", "oo");
+                cityName = _name[p];
+            }
+        }
+        return cityName;
+    }
+
+
 
     private void settingAPI_Data() {
         SearchTask task = new SearchTask();
@@ -281,27 +582,34 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
             String RESULT = task.execute().get();
             Log.i("전달 받은 값", RESULT);
 
-            //사진링크, 타이틀(관광명), 분야뭔지 분리
-            name_1 = RESULT.split("\n");
+            if(RESULT.length() != 0) {
 
-            for (int i = 0; i < name_1.length; i++) {
-                name_2 = name_1[i].split("  ");
+                //사진링크, 타이틀(관광명), 분야뭔지 분리
+                name_1 = RESULT.split("\n");
 
-                //img_Url이 없는 경우도 있기 때문에, length = 3 = 있음/ 2 = 없음
-                if (name_2.length == 3) {
-                    contentid[i] = name_2[0];
-                    img_Url[i] = name_2[1];
-                    name[i] = name_2[2];
-                } else {
-                    contentid[i] = name_2[0];
-                    img_Url[i] = null;
-                    name[i] = name_2[1];
+                for (int i = 0; i < name_1.length; i++) {
+                    name_2 = name_1[i].split("  ");
+
+                    //img_Url이 없는 경우도 있기 때문에, length = 3 = 있음/ 2 = 없음
+                    if (name_2.length == 5) {
+                        areacode_arr[i] = name_2[0];
+                        contentid[i] = name_2[1];
+                        img_Url[i] = name_2[2];
+                        sigungucode_arr[i] = name_2[3];
+                        name2[i] = name_2[4];
+                    } else {
+                        areacode_arr[i] = name_2[0];
+                        contentid[i] = name_2[1];
+                        img_Url[i] = null;
+                        sigungucode_arr[i] = name_2[2];
+                        name2[i] = name_2[3];
+                    }
                 }
-            }
 
-            //리사이클러에 들어갈 데이터를 넣는다
-            for (int i = 0; i < name_1.length; i++) {
-                cardview_items.add(new Recycler_item(img_Url[i], name[i], contentid[i] , subject));
+                //리사이클러에 들어갈 데이터를 넣는다
+                for (int i = 0; i < name_1.length; i++) {
+                    cardview_items.add(new Recycler_item(img_Url[i], name2[i], contentid[i], subject, areacode_arr[i], sigungucode_arr[i]));
+                }
             }
 
         } catch (InterruptedException ex) {
@@ -309,6 +617,45 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         } catch (ExecutionException ex) {
             ex.printStackTrace();
         }
+
+    }
+
+    //화면을 생성할때 부드럽게 주기위한 애니메이션 함수
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void changeVisibility(final boolean isExpanded, int height) {
+
+        // height 값을 dp로 지정해서 넣고싶으면 아래 소스를 이용
+        float d = Page2.this.getResources().getDisplayMetrics().density;
+        final int applayout_height = (int) (445 * d);
+        final int map_height = (int) (277 * d);
+
+        final ValueAnimator va = isExpanded ? ValueAnimator.ofInt(applayout_height, height) : ValueAnimator.ofInt(height, applayout_height);
+        va.setDuration(600);   // Animation이 실행되는 시간, n/1000초
+        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+
+                int value = (int) animation.getAnimatedValue();                // value는 height 값
+                appBarLayout.getLayoutParams().height = value;
+                appBarLayout.requestLayout();
+
+            }
+        });
+
+        final ValueAnimator va2 = isExpanded ? ValueAnimator.ofInt(applayout_height, height) : ValueAnimator.ofInt(height, map_height);
+        va2.setDuration(600);   // Animation이 실행되는 시간, n/1000초
+        va2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+
+                int value = (int) animation.getAnimatedValue();                // value는 height 값
+
+
+            }
+        });
+
+        va2.start();
+        va.start();
     }
 
     private void getData () {
@@ -338,10 +685,10 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
                 st4 = new String[]{"순천", "논산", "보성"};
                 break;
             case "산업":
-                st1 = new String[]{"서울", "제천"};
-                st2 = new String[]{"인천", "남양주"};
-                st3 = new String[]{"대전", "마석"};
-                st4 = new String[]{"대구", "부산"};
+                st1 = new String[]{"서울","김제"};
+                st2 = new String[]{"인천","광양"};
+                st3 = new String[]{"대전","창원"};
+                st4 = new String[]{"대구","부전"};
                 break;
             case "건축/조형":
                 st1 = new String[]{"서울", "인천"};
@@ -437,15 +784,35 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
     }
 
     @Override
-    public void make_db(String countId, String name, String cityname) {
+    public void make_db(String countId, String name, String cityname, String type, String image, String click, String areaCode, String sigunguCode) {
+        cityname = compareStation(areaCode, sigunguCode);
         mDbOpenHelper.open();
-        mDbOpenHelper.insertColumn(countId, name, cityname);
+        Log.d("???","");
+        mDbOpenHelper.insertColumn(countId, name, cityname, type, image, click);
         mDbOpenHelper.close();
     }
 
     @Override
+    public String isClick(String countid) {
+        mDbOpenHelper.open();
+        Cursor iCursor = mDbOpenHelper.selectIdCulumns(countid);
+        Log.d("showDatabase", "DB Size: " + iCursor.getCount());
+
+        while (iCursor.moveToNext()) {
+            String userId = iCursor.getString(iCursor.getColumnIndex("userid"));
+
+            id = userId;
+        }
+        mDbOpenHelper.close();
+
+        return id;
+    }
+
+
+
+    @Override
     public void delete_db(String contentId) {
-          mDbOpenHelper.open();
+        mDbOpenHelper.open();
         mDbOpenHelper.deleteColumnByContentID(contentId);
         mDbOpenHelper.close();
 
@@ -518,8 +885,8 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
     {
         @Override
         protected void onPreExecute() {
-            //초기화 단계에서 사용
-//            progressBar.setVisibility(View.VISIBLE);
+            //프로그레스바 실행---------------------------------------------------------------여기 추가
+            loading_progress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -545,6 +912,8 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
                 boolean firstimage = false;
                 boolean item = false;
                 boolean contentid = false;
+                boolean sigungucode = false;
+                boolean areacode = false;
 
                 xmlUrl = new URL(url);
                 Log.d("url", url);
@@ -575,6 +944,15 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
                                 title = true;
                                 //Log.d("태그 시작", "태그 시작4");
                             }
+                            if (parser.getName().equals("sigungucode")) {
+                                Log.i("시군구코드", "시군구태그시작");
+                                sigungucode = true;
+                            }
+                            if (parser.getName().equals("areacode")) {
+                                Log.i("지역코드", "지역코드태그시작");
+                                areacode = true;
+                            }
+
                             break;
                         }
 
@@ -586,6 +964,16 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
                             if (firstimage) {
                                 returnResult += parser.getText() + "  ";
                                 firstimage = false;
+                            }
+                            if (sigungucode) {
+                                returnResult += parser.getText() + "  ";
+                                Log.i("시군구코드", parser.getText());
+                                sigungucode = false;
+                            }
+                            if (areacode) {
+                                returnResult += parser.getText() + "  ";
+                                Log.i("지역코드", parser.getText());
+                                areacode = false;
                             }
                             if (title) {
                                 returnResult += parser.getText() + "\n";
@@ -612,6 +1000,9 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+
+            //프로그레스바 안보이게--------------------------------------------------------------여기 추가
+            loading_progress.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -620,6 +1011,4 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick {
         super.onBackPressed();
         overridePendingTransition(0,0);
     }
-
-
 }

@@ -27,7 +27,7 @@ public class Page2_X_CategoryBottom extends BottomSheetDialogFragment {
     ListView listView;
     ArrayList<Category_item> list;
     Page2_X_CategoryBottom_Adapter adapter;
-    OnItemClick xInterface;
+    Page2_X_Interface xInterface;
     boolean Selected = false;
 
 
@@ -43,7 +43,7 @@ public class Page2_X_CategoryBottom extends BottomSheetDialogFragment {
         page2_x_main = (Page2_X_Main) getActivity();
 
         if(context instanceof Page2_X_Interface){
-            xInterface = (OnItemClick) context;
+            xInterface = (Page2_X_Interface) context;
         } else {
             throw new RuntimeException(context.toString() + "오류");
         }
@@ -106,7 +106,6 @@ public class Page2_X_CategoryBottom extends BottomSheetDialogFragment {
                 if(Selected){
                     xInterface.onData(sendData);
                 }
-
                 dismiss();
             }
         });
@@ -140,8 +139,6 @@ public class Page2_X_CategoryBottom extends BottomSheetDialogFragment {
         public void setName(String name) {
             this.name = name;
         }
-
-
 
         public String getContentId() {
             return contentId;

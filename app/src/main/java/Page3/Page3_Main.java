@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -15,6 +16,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -22,13 +25,22 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.androidtagview.ColorFactory;
 import com.example.androidtagview.TagContainerLayout;
@@ -47,6 +59,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import DB.Page3_DbOpenHelper;
+import Page1.EndDrawerToggle;
+import Page1.Main_RecyclerviewAdapter;
+import Page1.Page1;
+import Page2.Page2;
 import Page3_1.Page3_1_Main;
 
 import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
@@ -61,15 +78,32 @@ public class Page3_Main extends AppCompatActivity {
     boolean middleOk = false;
     boolean dateOk = false;
 
-    //page2 액티비티에서 받은 값 관련
+    //page2 액티비티에서 받은 값 관련(코스 전체추가 버튼)
     ArrayList<String> course = null;
-    ArrayList<String> course2 = null;
+    ArrayList<String> course2 =null;
+
+    ArrayList<String> items3 = null;
+
+    //메뉴 관련
+    private Context context;
+    private ImageButton menu_edit;
+    private ImageView userImg;
+    private TextView userText1;
+    private TextView userText2;
+    private RecyclerView recyclerView1;
+    private Switch positionBtn;
+    private Switch alramBtn;
+    Main_RecyclerviewAdapter adapter2;
+    ArrayList<String> name2 = new ArrayList<>();
+    private Toolbar toolbar2;
+    private DrawerLayout drawer;
+    private EndDrawerToggle mDrawerToggle;
+    NestedScrollView nestedScrollView;
 
 
     //svg 지도
     WebView page3_svg;
     RelativeLayout page3_svg_bg;
-    ScrollView scrollView;
 
     //이용권
     Button dayPass_3, dayPass_5, dayPass_7;
@@ -108,7 +142,15 @@ public class Page3_Main extends AppCompatActivity {
     //다음 페이지로 값을 전달할 list
     ArrayList <send_data> send_list = new ArrayList<send_data>();
 
+    //데이터베이스 관련--------------------------------------여기추가
+    Page3_DbOpenHelper page3_dbOpenHelper;
+    String forDB = "";
+    String daypassFromDB = null;
+    ArrayList<String> stationFromDB;
+
     boolean fromPage2 = false;
+
+    ImageButton logo;
 
 
 
@@ -119,8 +161,71 @@ public class Page3_Main extends AppCompatActivity {
 
         //page2에서 값을 받아온다
         Intent intent = getIntent();
-        course = (ArrayList<String>)intent.getSerializableExtra("course") ;
-        course2 = (ArrayList<String>)intent.getSerializableExtra("course2") ;
+        daypassFromDB = intent.getStringExtra("daypassFromDB");
+        course = (ArrayList<String>)intent.getSerializableExtra("page2_course") ;
+        course2 = (ArrayList<String>)intent.getSerializableExtra("page2_course2") ;
+        stationFromDB = (ArrayList<String>)intent.getSerializableExtra("stationFromDB") ;
+
+        //데베 생성
+        page3_dbOpenHelper = new Page3_DbOpenHelper(this);
+        page3_dbOpenHelper.open();
+        page3_dbOpenHelper.create();
+
+        Intent intent3 = getIntent();
+        items3 = (ArrayList<String>)intent3.getSerializableExtra("items3") ;
+
+        //객체 연결
+        context = getApplicationContext();
+        toolbar2 = findViewById(R.id.toolbar);
+        drawer = findViewById(R.id.drawer_layout);
+        userImg = (ImageView)findViewById(R.id.menu_userImage);
+        userText1 = (TextView)findViewById(R.id.menu_text1);
+        userText2 = (TextView)findViewById(R.id.menu_text2);
+        positionBtn = (Switch)findViewById(R.id.menu_postion_btn);
+        recyclerView1 = (RecyclerView)findViewById(R.id.menu_recyclerview1);
+        nestedScrollView = (NestedScrollView)findViewById(R.id.nestScrollView_page3);
+
+
+        mDrawerToggle = new EndDrawerToggle(this,drawer,toolbar2,R.string.open_drawer,R.string.close_drawer){
+            @Override //드로어가 열렸을때
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+            @Override //드로어가 닫혔을때
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+
+        setSupportActionBar(toolbar2);
+        drawer.addDrawerListener(mDrawerToggle);
+
+        //메뉴 안 내용 구성
+        recyclerView1.setLayoutManager(new LinearLayoutManager(this));
+        adapter2 = new Main_RecyclerviewAdapter(name2, context);
+        recyclerView1.setAdapter(adapter2);
+
+        //리사이클러뷰 헤더
+        name2.add("0");
+        name2.add("1");
+        name2.add("2");
+
+        //툴바 타이틀 없애기
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        logo = (ImageButton) findViewById(R.id.main_logo_page3);
+
+        logo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Page1.class);
+                intent.addFlags(intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
+                //overridePendingTransition(0,0);
+                startActivity(intent);
+            }
+        });
 
 
 
@@ -163,6 +268,31 @@ public class Page3_Main extends AppCompatActivity {
                 }
             }
         };
+
+        //데베에서 값을 받으면 이용권 세팅
+        if (daypassFromDB != null) {
+            switch (daypassFromDB) {
+                case "3일권":
+                    dateOk = true;
+                    dayPass = "3일권";
+                    dayPass_3.setSelected(true);
+                    dayPass_3.setTextColor(getResources().getColorStateList(R.color.btn_ticket_text));
+                    break;
+                case "5일권":
+                    dateOk = true;
+                    dayPass = "5일권";
+                    dayPass_5.setSelected(true);
+                    dayPass_5.setTextColor(getResources().getColorStateList(R.color.btn_ticket_text));
+                    break;
+                case "7일권":
+                    dateOk = true;
+                    dayPass = "7일권";
+                    dayPass_7.setSelected(true);
+                    dayPass_7.setTextColor(getResources().getColorStateList(R.color.btn_ticket_text));
+                    break;
+            }
+        }
+
 
         dayPass_3.setOnClickListener(onClickListener);
         dayPass_5.setOnClickListener(onClickListener);
@@ -217,12 +347,13 @@ public class Page3_Main extends AppCompatActivity {
         autoCompleteTextView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                scrollView.post(new Runnable() {
+                nestedScrollView.post(new Runnable() {
                     @Override
                     public void run() {
+                        autoCompleteTextView.setText("");
 
                         //키보드 올라와 있으면 작동 안함
-                        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                        nestedScrollView.fullScroll(ScrollView.FOCUS_DOWN);
                     }
                 });
                 return false;
@@ -236,33 +367,38 @@ public class Page3_Main extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (autoCompleteTextView.getText().toString() != null) {
                     page3_svg.loadUrl("javascript:setMessage('" + autoCompleteTextView.getText().toString() + "')");
+
+                    //자동입력에서 입력되면 지도 줌아웃됨--------------------------------------------------------------------여기추가
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        page3_svg.zoomBy(0.1f);
+                    }
+
+                    Log.i("svg ㅅ케일", String.valueOf(page3_svg.getScale()));
+                    //키보드 내림
+                    InputMethodManager mInputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    mInputMethodManager.hideSoftInputFromWindow(autoCompleteTextView.getWindowToken(), 0);
+
                 }
-                //키보드 내림
-                InputMethodManager mInputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                mInputMethodManager.hideSoftInputFromWindow(autoCompleteTextView.getWindowToken(), 0);
-            }
+                        }
         });
 
 
         // svg 지도
         page3_svg = (WebView) findViewById(R.id.page3_svg);
         page3_svg_bg = (RelativeLayout) findViewById(R.id.page3_svg_bg);
-        scrollView = (ScrollView) findViewById(R.id.page3_scrollView) ;
-
 
         //지도를 줌인 할 때, 스크롤뷰(부모뷰)의 영향을 받지 않는다. + 테두리가 생긴다.
         page3_svg.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 v.getParent().requestDisallowInterceptTouchEvent(true);
-                page3_svg_bg.setSelected(true);
                 return false;
             }
         });
 
 
         //지도가 아닌 배경을 눌렀을때 지도의 테두리를 없애줌 + 키보드 내림
-        scrollView.setOnTouchListener(new View.OnTouchListener() {
+        nestedScrollView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 page3_svg_bg.setSelected(false);
@@ -283,6 +419,23 @@ public class Page3_Main extends AppCompatActivity {
         page3_svg.setWebViewClient(new WebViewClient());
         page3_svg.setHorizontalScrollBarEnabled(false);         //스크롤바 안보이게함
         page3_svg.setVerticalScrollBarEnabled(false);
+
+        page3_svg.setWebChromeClient(new WebChromeClient() {
+            public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
+                new AlertDialog.Builder(Page3_Main.this)
+                        .setTitle("안내")
+                        .setMessage("해당역은 내일로 정차역이 아닙니다.")
+                        .setPositiveButton(android.R.string.ok,
+                                new AlertDialog.OnClickListener() {
+                                    public void onClick(
+                                            DialogInterface dialog,
+                                            int which) {
+                                        result.confirm();
+                                    }
+                                }).setCancelable(false).create().show();
+                return true;
+            }
+        });
 
         //웹뷰를 로드함
         page3_svg.loadUrl("file:///android_asset/index.html");
@@ -364,7 +517,6 @@ public class Page3_Main extends AppCompatActivity {
 
 
                 }
-                //page3_svg.loadUrl("javascript:setMessage('" + course + "')");
             }
         }
 
@@ -388,9 +540,73 @@ public class Page3_Main extends AppCompatActivity {
 
 
                 }
-                //page3_svg.loadUrl("javascript:setMessage('" + course + "')");
             }
         }
+
+        if (items3!=null) {
+            for (int i = 0; i < items3.size(); i++) {
+                if (i == 0) {
+                    mTagContainerLayout1.setTagBackgroundColor(Color.parseColor("#FE9D0D"));
+                    mTagContainerLayout1.setTagBorderColor(Color.parseColor("#FE9D0D"));
+                    mTagContainerLayout1.addTag(items3.get(i));
+                    list1.add(items3.get(i));
+                    startOk = true;
+
+                } else {
+                    mTagContainerLayout1.setCrossColor(Color.parseColor("#1B503D"));
+                    mTagContainerLayout1.setTagBackgroundColor(Color.parseColor("#4DD9A9"));
+                    mTagContainerLayout1.setTagBorderColor(Color.parseColor("#4DD9A9"));
+                    mTagContainerLayout1.addTag(items3.get(i));
+                    list1.add(items3.get(i));
+                    middleOk = true;
+
+                }
+            }
+        }
+
+        //page1 intent 부분
+        if (stationFromDB!=null) {
+            for (int i = 0; i < stationFromDB.size(); i++) {
+                if (i == 0) {
+                    mTagContainerLayout1.setTagBackgroundColor(Color.parseColor("#FE9D0D"));
+                    mTagContainerLayout1.setTagBorderColor(Color.parseColor("#FE9D0D"));
+                    mTagContainerLayout1.addTag(stationFromDB.get(i));
+                    list1.add(stationFromDB.get(i));
+                    startOk = true;
+                } else if(i < stationFromDB.size()-1) {
+                    mTagContainerLayout1.setCrossColor(Color.parseColor("#1B503D"));
+                    mTagContainerLayout1.setTagBackgroundColor(Color.parseColor("#4DD9A9"));
+                    mTagContainerLayout1.setTagBorderColor(Color.parseColor("#4DD9A9"));
+                    mTagContainerLayout1.addTag(stationFromDB.get(i));
+                    list1.add(stationFromDB.get(i));
+                    middleOk = true;
+                }  else {
+                    mTagContainerLayout1.setCrossColor(Color.parseColor("#FE800D"));
+                    mTagContainerLayout1.setTagBackgroundColor(Color.parseColor("#FE800D"));
+                    mTagContainerLayout1.setTagBorderColor(Color.parseColor("#FE800D"));
+                    mTagContainerLayout1.addTag(stationFromDB.get(i));
+                    list1.add(stationFromDB.get(i));
+                    endOk = true;
+                }
+            }
+        }
+
+        //지도에서 역 누르면 태그뷰에 추가되는 부분-----------------------------여기추가
+        page3_svg.addJavascriptInterface(new Object(){
+            @JavascriptInterface
+            public void send(final String msg) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            page3_svg.zoomBy(0.1f);
+                        }
+                    }
+                });
+            }
+        }, "android2");
+
+
 
 
 
@@ -528,9 +744,18 @@ public class Page3_Main extends AppCompatActivity {
                         for(int j=0; j<237; j++){
                             if(list1.get(i).equals(name[j])){
                                 send_list.add(new send_data(code[j],name[j]) );
+
+                                //선택된 역을 하나의 string 으로 넣어줌
+                                forDB = forDB + "," + name[j];
                             }
                         }
                     }
+
+                    //값을 데베에 저장
+                    page3_dbOpenHelper.open();
+                    page3_dbOpenHelper.deleteAllColumns();
+                    page3_dbOpenHelper.insertColumn( dayPass, forDB);
+                    Log.i("이렇게 저장됨", dayPass+forDB);
 
                     Intent intent = new Intent(getApplicationContext(), Page3_1_Main.class);
                     intent.putExtra("list", (Serializable) send_list);           //추가된 역
@@ -645,6 +870,12 @@ public class Page3_Main extends AppCompatActivity {
 
             list.add(name[i]);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(0,0);
     }
 
 

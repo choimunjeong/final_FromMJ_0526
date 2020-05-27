@@ -12,7 +12,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.hansol.spot_200510_hs.R;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
+
 
 public class EndDrawerToggle implements DrawerLayout.DrawerListener {
 
