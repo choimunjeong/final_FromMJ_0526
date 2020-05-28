@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.core.view.MotionEventCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
@@ -53,6 +55,7 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
 
     //헤더바 위치가 0이면 true로 바뀌고 1일차로 움직일 수 없게 만듦
     boolean firstdone = false;
+    private ArrayList<Integer> headerPosition = new ArrayList<>();
 
     //헤더인지 아이템인지 확인하는데 필요함/ HEADER:n일차 바 / CHILD:기차시간표 / CITY:관광지 부분
     public static final int HEADER = 0;
@@ -137,6 +140,10 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
                     return false;
                 }
             });
+
+
+            headerPosition.add(position);
+
         }
 
 
@@ -208,14 +215,26 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public void onItemMove(int fromPos, int toPos) {
         //0번째=1일차로는 움직일 수 없음
-        if(toPos != 0 ){
+        if(toPos != 0){
+            forProgress.settingProgress(true);
             Page3_1_1_1_Main.RecycleItem target = items.get(fromPos);
             items.remove(fromPos);
             items.add(toPos, target);
             notifyItemMoved(fromPos, toPos);
-            notifyItemChanged(fromPos);
-            notifyItemChanged(toPos);
+
+
+            //움직지면 0.3초 후에 헤더바가 고정되고 변경된 위치가 업뎃 됨
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                    forProgress.settingProgress(false);
+                }
+            }, 300);
         }
+
+
 
     }
 
@@ -240,7 +259,7 @@ public class Page3_1_1_1_trainAdapter extends RecyclerView.Adapter<RecyclerView.
         public HeaderViewHolder(View itemView) {
             super(itemView);
             header_title = (TextView) itemView.findViewById(R.id.header_title);
-            move_btn = (TextView) itemView.findViewById(R.id.move_btn);
+            move_btn = itemView.findViewById(R.id.move_btn);
             list_header = (LinearLayout) itemView.findViewById(R.id.list_header);
             move_img = (ImageView)itemView.findViewById(R.id.move_btn_img);
         }
