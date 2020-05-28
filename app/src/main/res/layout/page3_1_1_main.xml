@@ -139,6 +139,37 @@
                 android:background="@drawable/box_round3"
                 android:elevation="4dp" />
 
+
+            //여기 추가--------------------------------------------------------
+            //안내메시지
+            <RelativeLayout
+                android:id="@+id/info_message3"
+                android:layout_width="226dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginBottom="75dp"
+                android:background="@drawable/ic_message_left"
+                android:visibility="invisible">
+
+                <TextView
+                    android:layout_width="187dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="11dp"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/message3"
+                    android:textAppearance="@style/info_message"/>
+
+                <Button
+                    android:id="@+id/info_dismiss_btn3"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentRight="true"
+                    android:background="#00000000"/>
+
+            </RelativeLayout>
+
+
         </RelativeLayout>
 
         </androidx.core.widget.NestedScrollView>

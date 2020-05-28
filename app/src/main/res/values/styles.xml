@@ -161,4 +161,13 @@
     </style>
 
 
+    //말풍선 텍스트
+    <style name="info_message">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:fontFamily">@font/notosans_regular</item>
+    </style>
+
+
+
 </resources>

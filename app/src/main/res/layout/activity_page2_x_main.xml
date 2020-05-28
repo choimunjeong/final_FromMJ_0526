@@ -179,7 +179,7 @@
         android:text="CATEGORY"
         android:textColor="#000000"/>
 
-    //------------------------------------------여기추가
+
     <ProgressBar
         android:id="@+id/progress"
         android:layout_width="60dp"
@@ -187,5 +187,35 @@
         android:layout_gravity="center"
         android:visibility="invisible"
         android:background="@drawable/progress_circle"/>
+
+
+    //여기 추가--------------------------------------------------------
+    //안내메시지
+    <RelativeLayout
+        android:id="@+id/info_message2"
+        android:layout_width="226dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="75dp"
+        android:background="@drawable/ic_message_right"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="187dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="11dp"
+            android:layout_centerHorizontal="true"
+            android:text="@string/message2"
+            android:textAppearance="@style/info_message"/>
+
+        <Button
+            android:id="@+id/info_dismiss_btn2"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:background="#00000000"/>
+
+    </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

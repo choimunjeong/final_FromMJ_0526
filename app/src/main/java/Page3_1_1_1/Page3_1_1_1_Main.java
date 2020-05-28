@@ -2,8 +2,10 @@ package Page3_1_1_1;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -86,6 +89,8 @@ public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_
     private ImageButton logo;
     //------------------------------------------------------여기 추가
     private ProgressBar loading_progress;
+    private RelativeLayout info_message, info_message2;
+    private Button info_dismiss_btn, info_dismiss_btn2;
 
 
 
@@ -129,8 +134,51 @@ public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_
         userText2 = (TextView)findViewById(R.id.menu_text2);
         positionBtn = (Switch)findViewById(R.id.menu_postion_btn);
         recyclerView1 = (RecyclerView)findViewById(R.id.menu_recyclerview1);
-        //**************여기 추가*********************************이 액티비티에선 인터페이스 필요해서 만듦*****************************************
         loading_progress = findViewById(R.id.page3_1_1_1_progress);
+        info_message = findViewById(R.id.info_message4);
+        info_message2 = findViewById(R.id.info_message5);
+        info_dismiss_btn = findViewById(R.id.info_dismiss_btn4);
+        info_dismiss_btn2 = findViewById(R.id.info_dismiss_btn5);
+
+
+        //최소 실행 때 보이는 안내창-----------------------------------------------
+        SharedPreferences a = getSharedPreferences("info1", MODE_PRIVATE);
+        final SharedPreferences.Editor editor = a.edit();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                editor.putInt("info4", 1);
+                editor.commit();
+            }
+        }, 300);
+
+        //첫 실행시 나오는 안내 말풍선
+        SharedPreferences preferences =getSharedPreferences("info1", MODE_PRIVATE);
+        int firstviewShow = preferences.getInt("info4", 0);
+
+        // 1이 아니라면 취향파악페이지 보여주기 = 처음 실행이라면
+        if (firstviewShow != 1) {
+            info_message.setVisibility(View.VISIBLE);
+            info_message2.setVisibility(View.VISIBLE);
+        }
+
+        info_dismiss_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                info_message.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        info_dismiss_btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                info_message2.setVisibility(View.INVISIBLE);
+            }
+        });
+        //여기까지--------------------------------------------------------------------
+
+
 
         mDrawerToggle = new EndDrawerToggle(this,drawer,toolbar2,R.string.open_drawer,R.string.close_drawer){
             @Override //드로어가 열렸을때

@@ -3,12 +3,15 @@ package Page3_1_1;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -85,6 +88,8 @@ public class Page3_1_1_Main extends AppCompatActivity implements Page3_1_1_addBo
     String[] name = new String[237];
     String readStr = "";
 
+    private RelativeLayout info_message;
+    private Button info_dismiss_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +118,39 @@ public class Page3_1_1_Main extends AppCompatActivity implements Page3_1_1_addBo
         userText2 = (TextView)findViewById(R.id.menu_text2);
         positionBtn = (Switch) findViewById(R.id.menu_postion_btn);
         recyclerView1 = (RecyclerView)findViewById(R.id.menu_recyclerview1);
+        info_message = findViewById(R.id.info_message3);
+        info_dismiss_btn = findViewById(R.id.info_dismiss_btn3);
+
+
+        //최소 실행 때 보이는 안내창-----------------------------------------------
+        SharedPreferences a = getSharedPreferences("info1", MODE_PRIVATE);
+        final SharedPreferences.Editor editor = a.edit();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                editor.putInt("info3", 1);
+                editor.commit();
+            }
+        }, 300);
+
+        //첫 실행시 나오는 안내 말풍선
+        SharedPreferences preferences =getSharedPreferences("info1", MODE_PRIVATE);
+        int firstviewShow = preferences.getInt("info3", 0);
+
+        // 1이 아니라면 취향파악페이지 보여주기 = 처음 실행이라면
+        if (firstviewShow != 1) {
+            info_message.setVisibility(View.VISIBLE);
+        }
+
+        info_dismiss_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                info_message.setVisibility(View.INVISIBLE);
+            }
+        });
+        //여기까지--------------------------------------------------------------------
+
 
         mDrawerToggle = new EndDrawerToggle(this,drawer,toolbar2,R.string.open_drawer,R.string.close_drawer){
             @Override //드로어가 열렸을때
