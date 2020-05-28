@@ -30,7 +30,7 @@
                 android:layout_width="65dp"
                 android:layout_height="0dp"
                 android:layout_centerHorizontal="true"
-                android:background="@drawable/ic_icon_maparrow"/>
+                android:background="#00000000"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/page2_X_recyclerview"
