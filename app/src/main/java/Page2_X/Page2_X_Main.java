@@ -475,7 +475,7 @@ public class Page2_X_Main extends AppCompatActivity implements Page2_X_Interface
                     arrow_btn.requestLayout();
 
                     //맵 중심을 리셋
-                    mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(y, x), 8, true);
+                    //mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(y, x), 8, true);
                 }
             }
         });

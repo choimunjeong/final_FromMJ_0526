@@ -32,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -87,6 +88,7 @@ import DB.Train_DbOpenHelper;
 import Page1.EndDrawerToggle;
 import Page1.Main_RecyclerviewAdapter;
 import Page1.Page1;
+import Page2.Page2;
 import Page2_1_1.NetworkStatus;
 import Page3.Page3_Main;
 
@@ -175,6 +177,7 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
     float d;
 
     //위치서비스 관련
+    private List<String> onoff = new ArrayList<>();
     String key;
     int gotData = -1;
     List<Integer> getPosition= new ArrayList<>();
@@ -229,8 +232,8 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         table_title = (LinearLayout)findViewById(R.id.table_title);
         past_img = findViewById(R.id.page1_schedule_pastImg);
 
-        completeList= new ArrayList<Api_Item>();
-        pagerAdapter = new Page1_pagerAdapter(this, this, arrayLocal, this);
+//        completeList= new ArrayList<Api_Item>();
+//        pagerAdapter = new Page1_pagerAdapter(this, this, arrayLocal, this);
 
 
         page1_scrollView = (NestedScrollView)findViewById(R.id.nestScrollView_page1_schedule);
@@ -243,7 +246,53 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         userText1 = (TextView)findViewById(R.id.menu_text1);
         userText2 = (TextView)findViewById(R.id.menu_text2);
         positionBtn = (Switch)findViewById(R.id.menu_postion_btn);
+        alramBtn = (Switch)findViewById(R.id.menu_alram_btn);
         recyclerView1 = (RecyclerView)findViewById(R.id.menu_recyclerview1);
+
+
+        // DB열기
+        menu_dbOpenHelper = new Menu_DbOpenHelper(this);
+        menu_dbOpenHelper.open();
+        menu_dbOpenHelper.create();
+        notity_listner("");
+
+
+        //위치 스위치 관련
+        setButtonsState(Location_Utils.requestingLocationUpdates(this));
+        positionBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+
+                } else {
+                    mService.removeLocationUpdates();
+                }
+            }
+        });
+
+
+
+
+        //알림 스위치 버튼
+        setButtonsState_notity();
+        alramBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    menu_dbOpenHelper.open();
+                    menu_dbOpenHelper.deleteAllColumns();
+                    menu_dbOpenHelper.insertColumn("true", "0");
+                    //  menu_dbOpenHelper.close();
+
+                }else {
+                    menu_dbOpenHelper.open();
+                    menu_dbOpenHelper.deleteAllColumns();
+                    menu_dbOpenHelper.insertColumn("false", "0");
+                    //  menu_dbOpenHelper.close();
+                }
+            }
+        });
+
 
         mDrawerToggle = new EndDrawerToggle(this,drawer,toolbar2,R.string.open_drawer,R.string.close_drawer){
             @Override //드로어가 열렸을때
@@ -1216,6 +1265,45 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
 
         Address address = addresses.get(0);
         return address.getAddressLine(0).toString()+"\n";
+    }
+
+
+
+    public void notity_listner(String sort){
+        Cursor iCursor = menu_dbOpenHelper.selectColumns();
+
+        while(iCursor.moveToNext()){
+            String  id = iCursor.getString(iCursor.getColumnIndex("userid"));
+            Log.i("갑자기 왜 안돼", String.valueOf(iCursor.getCount()) + "/" + id);
+            onoff.add(id);
+        }
+
+        //최초 실행을 위함
+        if(iCursor.getCount() == 0){
+            menu_dbOpenHelper.insertColumn("true", "0");
+            onoff.add("true");
+        }
+    }
+
+    //위치 스위치 상태
+    private void setButtonsState(boolean requestingLocationUpdates ) {
+        if (requestingLocationUpdates) {
+            positionBtn.setChecked(true);
+        } else if( !requestingLocationUpdates){
+            positionBtn.setChecked(false);
+        }
+    }
+
+
+
+    //알림 스위치 상태
+    private void setButtonsState_notity() {
+        if (onoff.get(0).equals("true")) {
+            alramBtn.setChecked(true);
+        } else {
+            alramBtn.setChecked(false);
+        }
+
     }
 
 
