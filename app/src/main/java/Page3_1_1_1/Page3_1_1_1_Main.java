@@ -1,6 +1,7 @@
 package Page3_1_1_1;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -369,9 +370,25 @@ public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_
         save_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //일차바 순서가 잘 되어있는지 검사---------------------------------여기추가
+                List<String> headerPosition = new ArrayList<>();
+                boolean headerErro = false;
+                for(int i =0; i < list.size(); i++){
+                    if( list.get(i).type == 0){
+                        headerPosition.add(list.get(i).text);
+                    }
+                }
+
+                for(int i =0 ; i < headerPosition.size()-1; i++){
+                    if(Integer.parseInt(headerPosition.get(i).replaceAll("[^0-9]", "") )> Integer.parseInt(headerPosition.get(i+1).replaceAll("[^0-9]", "") ) ){
+                        headerErro = true;
+                        HeaderErroDialog();
+                        break;
+                    }
+                }
 
                 //page3_1에서 온 거라면
-                if(db_key == null){
+                if(db_key == null && !headerErro){
                     //현재시간얻기(데이터베이스의 기본키가 됨)
                     long now = System.currentTimeMillis();
                     Date date = new Date(now);
@@ -398,7 +415,7 @@ public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_
                     startActivity(intent);
                 }
 
-                else{
+                else if (db_key != null && !headerErro){
                     dbOpenHelper.open();
                     dbOpenHelper.deleteColumnByKey(db_key);
                     for(int i=0; i < list.size(); i++){
@@ -455,6 +472,18 @@ public  class Page3_1_1_1_Main extends AppCompatActivity implements Page3_1_1_1_
     }
 
     //-----------------------------------------------여기추가
+    public void HeaderErroDialog() {
+        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setMessage("n일차 막대 순서를 확인해주세요.");
+        builder.setNegativeButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+    }
+
+
     @Override
     public void settingProgress(boolean run) {
         if(run){
