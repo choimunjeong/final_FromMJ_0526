@@ -100,6 +100,7 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
     ImageView last_station;
     TextView userName;
     TextView startStation, endStation;
+    ImageView past_img;
 
     // 날짜 관련 변수들
     String time, forcomparedate;
@@ -226,6 +227,7 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         endStation = (TextView)findViewById(R.id.page1_endTxt);
         last_station = (ImageView)findViewById(R.id.page1_timeTable_lastimg);
         table_title = (LinearLayout)findViewById(R.id.table_title);
+        past_img = findViewById(R.id.page1_schedule_pastImg);
 
         completeList= new ArrayList<Api_Item>();
         pagerAdapter = new Page1_pagerAdapter(this, this, arrayLocal, this);
@@ -775,7 +777,8 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
 
             //(2)지난 일정은 시간표 제공 안함
             else if(pastTime){
-                no_data.setText(R.string.train_err_time);
+                past_img.setVisibility(View.VISIBLE);
+                dataList.setVisibility(View.INVISIBLE);
             }
 
             //(3)API연결 오류(공공데이터포털 오류)
@@ -789,6 +792,8 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         }
         else {
             no_data.setText("");
+            past_img.setVisibility(View.INVISIBLE);
+            dataList.setVisibility(View.VISIBLE);
         }
     }
 
