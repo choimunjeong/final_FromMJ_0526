@@ -221,9 +221,8 @@ public class Page3_Main extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), Page1.class);
                 intent.addFlags(intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
-                intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
-                //overridePendingTransition(0,0);
                 startActivity(intent);
+                overridePendingTransition(0,0);
             }
         });
 

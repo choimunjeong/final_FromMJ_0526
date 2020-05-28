@@ -50,7 +50,7 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
     private String contentTypeId, cat1, cat2;
     private DbOpenHelper mDbOpenHelper;
     private String id;
-    private ProgressBar loading_progress;
+
 
     //역 이름을 받아서 지역코드랑 시군구코드 받기 위한 배열
     int station_code = 49;
@@ -110,8 +110,6 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
         mDbOpenHelper.open();
         mDbOpenHelper.create();
 
-        //----------프로그레스바--------------------------------------------여기 추가
-        loading_progress = v.findViewById(R.id.page2_1_1_progress);
 
 
         Button btn = v.findViewById(R.id.page2_1_fragment_more_btn);
@@ -120,8 +118,7 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //프로그레스바 실행---------------------------------------------------------------여기 추가
-                loading_progress.setVisibility(View.VISIBLE);
+
 
                 Intent intent = new Intent(getContext(), Page2_X_Main.class);
                 intent.putExtra("station", station);
@@ -129,14 +126,7 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
                 intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
 
-                //프로그레스바 안보이게--------------------------------------------------------------여기 추가
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        loading_progress.setVisibility(View.INVISIBLE);
-                    }
-                }, 400);
+
             }
         });
 
@@ -330,8 +320,6 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
     {
         @Override
         protected void onPreExecute() {
-            //프로그레스바 실행---------------------------------------------------------------여기 추가
-            loading_progress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -434,8 +422,6 @@ public class Page2_1_1_Fragment extends Fragment implements OnItemClick{
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            //프로그레스바 안보이게--------------------------------------------------------------여기 추가
-            loading_progress.setVisibility(View.INVISIBLE);
         }
     }
 

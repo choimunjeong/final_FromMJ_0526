@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowDisablePreview">true</item>   //-------------여기 추가
     </style>
 
     <style name="Transparent" parent="@style/Theme.AppCompat">
@@ -27,6 +28,7 @@
     </style>
 
     <style name="Theme.Dark" parent="AppTheme.NoActionBar">
+
         <item name="android:statusBarColor" tools:targetApi="21">@color/colorPrimaryDark</item> <!--Status Bar의 배경색-->
         <item name="android:windowLightStatusBar" tools:targetApi="23">false</item> <!--Status Bar 아이콘의 색상 true:검은 아이콘, false:흰 아이콘-->
 

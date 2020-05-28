@@ -85,7 +85,7 @@ public class Page1_1_1_Adapter extends RecyclerView.Adapter<Page1_1_1_Adapter.Vi
         holder.cityCount.setText("" + listForSecond.size());
 
         holder.onBind(position);
-        holder.textView1.setText(listData.get(position));
+        holder.textView1.setText(listData.get(position)+"역");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
