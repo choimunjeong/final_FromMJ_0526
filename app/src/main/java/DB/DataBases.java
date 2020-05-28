@@ -23,7 +23,7 @@ public final class DataBases {
                 +NAME+" text not null , "
                 +CITYNAME+" text not null ,"
                 +TYPE+" text not null , "
-                +IMAGE+" text not null , "
+                +IMAGE+" text  , "
                 +CLICK+" text  not null ); ";
     }
 }
