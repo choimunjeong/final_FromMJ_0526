@@ -19,8 +19,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_message_left" />
-                            <entry key="sourceFile" value="C:\Users\ctj12\OneDrive\문서\카카오톡 받은 파일\msgbox2_0528\message_left.svg" />
+                            <entry key="outputName" value="ic_textbox_past" />
+                            <entry key="sourceFile" value="C:\Users\ctj12\OneDrive\문서\카카오톡 받은 파일\textbox_past\textbox_past.svg" />
                           </map>
                         </option>
                       </PersistentState>

@@ -448,7 +448,7 @@ public class Page3_Main extends AppCompatActivity implements SharedPreferences.O
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (autoCompleteTextView.getText().toString() != null) {
-                    page3_svg.loadUrl("javascript:setMessage('" + autoCompleteTextView.getText().toString() + "')");
+                    page3_svg.loadUrl("javascript:setMessage('" + autoCompleteTextView.getText().toString() + "' , '0')");
 
                     //자동입력에서 입력되면 지도 줌아웃됨--------------------------------------------------------------------여기추가
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -587,7 +587,6 @@ public class Page3_Main extends AppCompatActivity implements SharedPreferences.O
                     mTagContainerLayout1.addTag(course.get(i));
                     list1.add(course.get(i));
                     startOk = true;
-
                 } else {
                     mTagContainerLayout1.setCrossColor(Color.parseColor("#1B503D"));
                     mTagContainerLayout1.setTagBackgroundColor(Color.parseColor("#4DD9A9"));
@@ -595,11 +594,21 @@ public class Page3_Main extends AppCompatActivity implements SharedPreferences.O
                     mTagContainerLayout1.addTag(course.get(i));
                     list1.add(course.get(i));
                     middleOk = true;
-
-
-
                 }
             }
+            //지도에 동그라미 그려주는 부분
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < course.size(); i++) {
+                        if (i == 0) {
+                            page3_svg.loadUrl("javascript:setMessage('" + course.get(i) + "' , '1')");
+                        } else {
+                            page3_svg.loadUrl("javascript:setMessage('" + course.get(i) + "' , '2')");
+                        }
+                    }
+                }
+            }, 300);
         }
 
         if (course2!=null) {
@@ -618,11 +627,21 @@ public class Page3_Main extends AppCompatActivity implements SharedPreferences.O
                     mTagContainerLayout1.addTag(course2.get(i));
                     list1.add(course2.get(i));
                     middleOk = true;
-
-
-
                 }
             }
+            //지도에 동그라미 그려주는 부분
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < course2.size(); i++) {
+                        if (i == 0) {
+                            page3_svg.loadUrl("javascript:setMessage('" + course2.get(i) + "' , '1')");
+                        } else {
+                            page3_svg.loadUrl("javascript:setMessage('" + course2.get(i) + "' , '2')");
+                        }
+                    }
+                }
+            }, 300);
         }
 
         if (items3!=null) {
@@ -644,6 +663,19 @@ public class Page3_Main extends AppCompatActivity implements SharedPreferences.O
 
                 }
             }
+            //지도에 동그라미 그려주는 부분
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < items3.size(); i++) {
+                        if (i == 0) {
+                            page3_svg.loadUrl("javascript:setMessage('" + items3.get(i) + "' , '1')");
+                        } else  {
+                            page3_svg.loadUrl("javascript:setMessage('" + items3.get(i) + "' , '2')");
+                        }
+                    }
+                }
+            }, 300);
         }
 
         //page1 intent 부분
@@ -671,7 +703,25 @@ public class Page3_Main extends AppCompatActivity implements SharedPreferences.O
                     endOk = true;
                 }
             }
+
+            //지도에 동그라미 그려주는 부분
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < stationFromDB.size(); i++) {
+                        if (i == 0) {
+                            page3_svg.loadUrl("javascript:setMessage('" + stationFromDB.get(i).trim() + "' , '1')");
+                        } else if(i < stationFromDB.size()-1) {
+                            page3_svg.loadUrl("javascript:setMessage('" + stationFromDB.get(i) + "' , '2')");
+                        }  else {
+                            page3_svg.loadUrl("javascript:setMessage('" + stationFromDB.get(i) + "' , '3')");
+                        }
+                    }
+                }
+            }, 300);
         }
+
+
 
         //지도에서 역 누르면 태그뷰에 추가되는 부분-----------------------------여기추가
         page3_svg.addJavascriptInterface(new Object(){
