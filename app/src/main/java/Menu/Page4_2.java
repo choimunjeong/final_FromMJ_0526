@@ -27,6 +27,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.hansol.spot_200510_hs.R;
 
 import java.util.ArrayList;
+
+import DB.Second_MainDBHelper;
 import DB.Train_DbOpenHelper;
 import Page1.EndDrawerToggle;
 import Page1.Main_RecyclerviewAdapter;
@@ -64,6 +66,9 @@ public class Page4_2 extends AppCompatActivity implements Page4_sendData {
     private EndDrawerToggle mDrawerToggle;
 
     ImageButton logo;
+    //메인에 등록한 일정인지 확인하고 같으면 메인의 일정도 삭제해줘야함
+    private Second_MainDBHelper second_mainDBHelper;
+    private String second_key;
 
 
     @Override
@@ -80,6 +85,10 @@ public class Page4_2 extends AppCompatActivity implements Page4_sendData {
         //Train_db 모두 수정
 
         //데베 관련
+        second_mainDBHelper = new Second_MainDBHelper(Page4_2.this);
+        second_mainDBHelper.open();
+        second_mainDBHelper.create();
+
         mDbOpenHelper = new Train_DbOpenHelper(Page4_2.this);
         mDbOpenHelper.open();
         mDbOpenHelper.create();
@@ -125,8 +134,8 @@ public class Page4_2 extends AppCompatActivity implements Page4_sendData {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), Page1.Page1.class);
-                intent.addFlags(intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("Logo", "1");
                 startActivity(intent);
                 overridePendingTransition(0,0);  //순서를 바꿔줌
             }
@@ -161,6 +170,11 @@ public class Page4_2 extends AppCompatActivity implements Page4_sendData {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
+        Cursor iCursor = second_mainDBHelper.selectColumns();
+        while (iCursor.moveToNext()){
+            String Key = iCursor.getString(iCursor.getColumnIndex("userid"));
+            second_key = Key;
+        }
 
     }
 
@@ -209,6 +223,10 @@ public class Page4_2 extends AppCompatActivity implements Page4_sendData {
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                if(key.equals(second_key)){
+                    second_mainDBHelper.deleteAllColumns();
+                    second_mainDBHelper.close();
+                }
                 mDbOpenHelper.open();
                 mDbOpenHelper.deleteColumnByKey(key);
                 mDbOpenHelper.close();

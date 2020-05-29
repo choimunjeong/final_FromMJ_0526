@@ -24,8 +24,10 @@ import DB.Heart_page;
 import DB.Like_DbOpenHelper;
 import DB.Menu_DbOpenHelper;
 import DB.Page3_DbOpenHelper;
+import DB.Second_MainDBHelper;
 import Page1_schedule.LocationUpdatesService;
 import Page1_schedule.Location_Utils;
+import Page1_schedule.Page1_Main;
 import Page2_X.Page2_X;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -158,6 +160,9 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
     //------------------------------------------------------여기 추가
     private ProgressBar loading_progress;
 
+    //두번째 메인 관련
+    private Second_MainDBHelper second_mainDBHelper;
+    List<String> list = new ArrayList<>();
 
 
     @SuppressLint("WrongViewCast")
@@ -205,6 +210,13 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
         name.add("2");
 
         // DB열기
+        second_mainDBHelper = new Second_MainDBHelper(this);
+        second_mainDBHelper.open();
+        second_mainDBHelper.create();
+
+
+
+
         menu_dbOpenHelper = new Menu_DbOpenHelper(this);
         menu_dbOpenHelper.open();
         menu_dbOpenHelper.create();
@@ -252,8 +264,9 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
 
 
         //백그라운드에서 위치가 다 돌았을 때 화면 켜지고 연결 해제
-        final Intent intent = getIntent();
+        Intent intent = getIntent();
         String key =  intent.getStringExtra("key");
+        String touchLogo = intent.getStringExtra("Logo");
         if(key != null){
             Log.i("받음?", key);
             Handler handler  = new Handler();
@@ -263,6 +276,23 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
                     mService.removeLocationUpdates();
                 }
             }, 500);
+        }
+
+
+
+        if(touchLogo != null){
+            Log.i("로고 누르면 int 바귐", touchLogo);
+        } else {
+            //메인으로 등록할 일정이 있는지 검사
+            isSecondMain();
+
+            if(list.size() > 0 ) {
+                Intent intent3 = new Intent(getApplicationContext(), Page1_Main.class);
+                intent3.putExtra("key",  list.get(0));
+                intent3.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                intent3.addFlags(FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent3);
+            }
         }
 
 
@@ -310,7 +340,6 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
 //                Log.i("score", String.valueOf(score[i]));
             }
         } else {
-            final Intent intent2 = getIntent();
             // 나중에 하기 버튼 눌렀을 때 임의의 값 넘겨주기
             if (intent.hasExtra("Main")) {
                 score = intent.getIntArrayExtra("Main");
@@ -1000,5 +1029,15 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
     }
 
 
+
+    //메인으로 등록할 일정이 있는지 검사
+    public void isSecondMain(){
+        Cursor iCursor = second_mainDBHelper.selectColumns();
+
+        while(iCursor.moveToNext()){
+            String  id = iCursor.getString(iCursor.getColumnIndex("userid"));
+            list.add(id);
+        }
+    }
 }
 

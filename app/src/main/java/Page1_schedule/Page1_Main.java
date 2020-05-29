@@ -84,6 +84,7 @@ import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import DB.Menu_DbOpenHelper;
+import DB.Second_MainDBHelper;
 import DB.Train_DbOpenHelper;
 import Page1.EndDrawerToggle;
 import Page1.Main_RecyclerviewAdapter;
@@ -202,7 +203,8 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         }
     };
 
-
+    //일정 등록 후 나올 메인페이지 관련
+    private Second_MainDBHelper second_mainDBHelper;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -251,6 +253,10 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
 
 
         // DB열기
+        second_mainDBHelper = new Second_MainDBHelper(this);
+        second_mainDBHelper.open();
+        second_mainDBHelper.create();
+
         menu_dbOpenHelper = new Menu_DbOpenHelper(this);
         menu_dbOpenHelper.open();
         menu_dbOpenHelper.create();
@@ -328,8 +334,8 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), Page1.class);
-                intent.addFlags(intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("Logo", "1");
                 startActivity(intent);
                 overridePendingTransition(0,0);  //순서를 바꿔줌
             }
@@ -341,6 +347,19 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         //page3_1_1_1_1 에서 일정저장하기 누를때 받아옴
         Intent get = getIntent();
         db_key = get.getStringExtra("key");
+
+        //이 일정을 저장할거냐고 물어봄 -------------------------여기추가
+        Cursor iCursor = second_mainDBHelper.selectColumns();
+        String check_SecondPage = null;
+        while(iCursor.moveToNext()){
+            String  id = iCursor.getString(iCursor.getColumnIndex("userid"));
+            check_SecondPage = id;
+        }
+        Log.i("뭐야123", db_key+"-"+check_SecondPage);
+        if(!db_key.equals(check_SecondPage) ){
+            setSecondMain();
+        }
+
 
 
         // 현재 날짜 출력
@@ -1306,6 +1325,27 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
 
     }
 
+
+    //-----------------------------------------------여기추가
+    public void setSecondMain() {
+        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setMessage("이 일정을 메인 일정으로 정할까요?");
+        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                second_mainDBHelper.deleteAllColumns();
+                second_mainDBHelper.insertColumn(db_key, "ture");
+                second_mainDBHelper.close();
+            }
+        });
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                second_mainDBHelper.close();
+            }
+        });
+        builder.show();
+    }
 
 }
 

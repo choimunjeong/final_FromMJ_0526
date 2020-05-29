@@ -362,8 +362,8 @@ public class Page2 extends AppCompatActivity implements Page2_OnItemClick ,  Sha
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Page2.this, Page1.class);
-                intent.addFlags(intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("Logo", "1");
                 startActivity(intent);
                 overridePendingTransition(0,0);  //순서를 바꿔줌
             }
