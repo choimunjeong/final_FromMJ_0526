@@ -65,6 +65,7 @@ import com.example.hansol.spot_200510_hs.Page0;
 import com.example.hansol.spot_200510_hs.R;
 import com.google.android.material.appbar.AppBarLayout;
 
+import java.io.File;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -904,6 +905,13 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        try {
+            trimCache(this);
+            // Toast.makeText(this,"onDestroy " ,Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+      //  clearApplicationData();  //--------------여기추가
     }
 
 
@@ -1038,6 +1046,77 @@ public class Page1 extends AppCompatActivity implements View.OnClickListener, Sh
             String  id = iCursor.getString(iCursor.getColumnIndex("userid"));
             list.add(id);
         }
+    }
+
+
+    //캐시삭제하는 부분----------------------------------------여기추가
+//    private void clearApplicationCache(){
+//        Log.i("부르긴 했는디", "삭제됐는가?");
+//        File cache = getCacheDir();
+//        File appDir = new File(cache.getParent());
+//        if(appDir.exists()){
+//            String[] children = appDir.list();
+//            for(String s : children){
+//                if( !s.equals("lib") && !s.equals("filed")){
+//                    deleteCache(new File(appDir, s));
+//                }
+//            }
+//        }
+//    }
+
+//    public void clearApplicationData() {
+//        File cache = getCacheDir();
+//        Log.i("부르긴 했는디", "삭제됐는가?"+String.valueOf(cache.length()));
+//        try {
+//        } catch (Exception e) {
+//        }
+//        File appDir = new File(cache.getParent());
+//        if (appDir.exists()) {
+//            String[] children = appDir.list();
+//            for (String s : children) {
+//                if (!s.equals("lib") && !(s.equals("shared_prefs"))) {
+//                    deleteDir(new File(appDir, s));
+//                }
+//            }
+//        }
+//    }
+//    public static boolean deleteDir(File dir) {
+//        if (dir != null && dir.isDirectory()) {
+//            String[] children = dir.list();
+//            for (int i = 0; i < children.length; i++) {
+//                boolean success = deleteDir(new File(dir, children[i]));
+//                if (!success) {
+//                    return false;
+//                }
+//            }
+//        }
+//        // The directory is now empty or this is a file so delete it
+//        return dir.delete();
+//    }
+
+
+    public static void trimCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        // The directory is now empty so delete it
+        return dir.delete();
     }
 }
 
