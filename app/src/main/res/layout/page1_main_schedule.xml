@@ -262,6 +262,17 @@
                 android:layout_marginLeft="10dp"
                 android:text="@string/train_err_internet"/>
 
+            //지난 일정일 때
+            <ImageView
+                android:id="@+id/page1_schedule_pastImg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/table_line"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:visibility="invisible"
+                android:background="@drawable/ic_textbox_past"/>
+
         </RelativeLayout>
 
 

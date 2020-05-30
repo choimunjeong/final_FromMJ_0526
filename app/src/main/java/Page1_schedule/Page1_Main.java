@@ -32,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -83,10 +84,12 @@ import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import DB.Menu_DbOpenHelper;
+import DB.Second_MainDBHelper;
 import DB.Train_DbOpenHelper;
 import Page1.EndDrawerToggle;
 import Page1.Main_RecyclerviewAdapter;
 import Page1.Page1;
+import Page2.Page2;
 import Page2_1_1.NetworkStatus;
 import Page3.Page3_Main;
 
@@ -100,6 +103,7 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
     ImageView last_station;
     TextView userName;
     TextView startStation, endStation;
+    ImageView past_img;
 
     // 날짜 관련 변수들
     String time, forcomparedate;
@@ -174,6 +178,7 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
     float d;
 
     //위치서비스 관련
+    private List<String> onoff = new ArrayList<>();
     String key;
     int gotData = -1;
     List<Integer> getPosition= new ArrayList<>();
@@ -198,7 +203,8 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         }
     };
 
-
+    //일정 등록 후 나올 메인페이지 관련
+    private Second_MainDBHelper second_mainDBHelper;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -226,9 +232,10 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         endStation = (TextView)findViewById(R.id.page1_endTxt);
         last_station = (ImageView)findViewById(R.id.page1_timeTable_lastimg);
         table_title = (LinearLayout)findViewById(R.id.table_title);
+        past_img = findViewById(R.id.page1_schedule_pastImg);
 
-        completeList= new ArrayList<Api_Item>();
-        pagerAdapter = new Page1_pagerAdapter(this, this, arrayLocal, this);
+//        completeList= new ArrayList<Api_Item>();
+//        pagerAdapter = new Page1_pagerAdapter(this, this, arrayLocal, this);
 
 
         page1_scrollView = (NestedScrollView)findViewById(R.id.nestScrollView_page1_schedule);
@@ -241,7 +248,57 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         userText1 = (TextView)findViewById(R.id.menu_text1);
         userText2 = (TextView)findViewById(R.id.menu_text2);
         positionBtn = (Switch)findViewById(R.id.menu_postion_btn);
+        alramBtn = (Switch)findViewById(R.id.menu_alram_btn);
         recyclerView1 = (RecyclerView)findViewById(R.id.menu_recyclerview1);
+
+
+        // DB열기
+        second_mainDBHelper = new Second_MainDBHelper(this);
+        second_mainDBHelper.open();
+        second_mainDBHelper.create();
+
+        menu_dbOpenHelper = new Menu_DbOpenHelper(this);
+        menu_dbOpenHelper.open();
+        menu_dbOpenHelper.create();
+        notity_listner("");
+
+
+        //위치 스위치 관련
+        setButtonsState(Location_Utils.requestingLocationUpdates(this));
+        positionBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+
+                } else {
+                    mService.removeLocationUpdates();
+                }
+            }
+        });
+
+
+
+
+        //알림 스위치 버튼
+        setButtonsState_notity();
+        alramBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    menu_dbOpenHelper.open();
+                    menu_dbOpenHelper.deleteAllColumns();
+                    menu_dbOpenHelper.insertColumn("true", "0");
+                    //  menu_dbOpenHelper.close();
+
+                }else {
+                    menu_dbOpenHelper.open();
+                    menu_dbOpenHelper.deleteAllColumns();
+                    menu_dbOpenHelper.insertColumn("false", "0");
+                    //  menu_dbOpenHelper.close();
+                }
+            }
+        });
+
 
         mDrawerToggle = new EndDrawerToggle(this,drawer,toolbar2,R.string.open_drawer,R.string.close_drawer){
             @Override //드로어가 열렸을때
@@ -277,8 +334,8 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), Page1.class);
-                intent.addFlags(intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("Logo", "1");
                 startActivity(intent);
                 overridePendingTransition(0,0);  //순서를 바꿔줌
             }
@@ -290,6 +347,19 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         //page3_1_1_1_1 에서 일정저장하기 누를때 받아옴
         Intent get = getIntent();
         db_key = get.getStringExtra("key");
+
+        //이 일정을 저장할거냐고 물어봄 -------------------------여기추가
+        Cursor iCursor = second_mainDBHelper.selectColumns();
+        String check_SecondPage = null;
+        while(iCursor.moveToNext()){
+            String  id = iCursor.getString(iCursor.getColumnIndex("userid"));
+            check_SecondPage = id;
+        }
+        Log.i("뭐야123", db_key+"-"+check_SecondPage);
+        if(!db_key.equals(check_SecondPage) ){
+            setSecondMain();
+        }
+
 
 
         // 현재 날짜 출력
@@ -775,7 +845,8 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
 
             //(2)지난 일정은 시간표 제공 안함
             else if(pastTime){
-                no_data.setText(R.string.train_err_time);
+                past_img.setVisibility(View.VISIBLE);
+                dataList.setVisibility(View.INVISIBLE);
             }
 
             //(3)API연결 오류(공공데이터포털 오류)
@@ -789,6 +860,8 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         }
         else {
             no_data.setText("");
+            past_img.setVisibility(View.INVISIBLE);
+            dataList.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1213,6 +1286,66 @@ public class Page1_Main extends AppCompatActivity implements   Page1_pagerAdapte
         return address.getAddressLine(0).toString()+"\n";
     }
 
+
+
+    public void notity_listner(String sort){
+        Cursor iCursor = menu_dbOpenHelper.selectColumns();
+
+        while(iCursor.moveToNext()){
+            String  id = iCursor.getString(iCursor.getColumnIndex("userid"));
+            Log.i("갑자기 왜 안돼", String.valueOf(iCursor.getCount()) + "/" + id);
+            onoff.add(id);
+        }
+
+        //최초 실행을 위함
+        if(iCursor.getCount() == 0){
+            menu_dbOpenHelper.insertColumn("true", "0");
+            onoff.add("true");
+        }
+    }
+
+    //위치 스위치 상태
+    private void setButtonsState(boolean requestingLocationUpdates ) {
+        if (requestingLocationUpdates) {
+            positionBtn.setChecked(true);
+        } else if( !requestingLocationUpdates){
+            positionBtn.setChecked(false);
+        }
+    }
+
+
+
+    //알림 스위치 상태
+    private void setButtonsState_notity() {
+        if (onoff.get(0).equals("true")) {
+            alramBtn.setChecked(true);
+        } else {
+            alramBtn.setChecked(false);
+        }
+
+    }
+
+
+    //-----------------------------------------------여기추가
+    public void setSecondMain() {
+        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setMessage("이 일정을 메인 일정으로 정할까요?");
+        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                second_mainDBHelper.deleteAllColumns();
+                second_mainDBHelper.insertColumn(db_key, "ture");
+                second_mainDBHelper.close();
+            }
+        });
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                second_mainDBHelper.close();
+            }
+        });
+        builder.show();
+    }
 
 }
 

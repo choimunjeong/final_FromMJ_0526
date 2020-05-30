@@ -11,6 +11,7 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -242,6 +243,7 @@ public class Page2_1_1_ViewPagerAdapter extends RecyclerView.Adapter<Page2_1_1_V
                     vp_bg.requestLayout();
                     vp.setVisibility(isExpanded ? View.VISIBLE : View.INVISIBLE);   // imageView가 실제로 사라지게하는 부분
                     updown_img.setBackgroundResource(isExpanded ? R.drawable.ic_down_btn : R.drawable.ic_up_btn);
+                    tabLayout.setSelectedTabIndicatorColor(isExpanded ? Color.parseColor("#4DD9A9") : Color.parseColor("#00000000"));
                 }
             });
             va.start();
